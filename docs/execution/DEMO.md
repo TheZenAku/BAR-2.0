@@ -44,12 +44,38 @@ F3: HUD (inclui linha de rede) · `?gfx=low|medium|high` na URL: perfil gráfico
 6. F3 mostra FPS, p95, draw calls e rede (RTT, snapshots/s, correções); `?gfx=low` muda o perfil.
 7. Segunda conta em outra janela: ambos se veem e se movem; "Sair" remove o jogador da sala.
 
+## Galeria de arte (M4) — separada do multiplayer
+
+```sh
+npm run demo:art   # http://127.0.0.1:5174/art.html (BAR_ART_PORT muda a porta); sem banco nem API
+```
+
+Na primeira vez baixa os originais das fontes oficiais (≈ 460 MB, SHA-256 conferido; a Quaternius abre o Edge para o
+fluxo de download do itch.io) e gera os GLBs; depois reaproveita o cache. `-- --rebuild` refaz; `-- --smoke` verifica
+página, catálogo e os 19 arquivos e encerra.
+
+| Ação                                  | Controle                                                            |
+| ------------------------------------- | ------------------------------------------------------------------- |
+| Candidato 1/2/3 · lado a lado         | `1` `2` `3` · `L`                                                   |
+| Girar · zoom · mover                  | arrastar · roda · botão direito                                     |
+| Frente · perfil · costas              | `F` `P` `C`                                                         |
+| Animação anterior/próxima · pausa     | `←` `→` · `Espaço`                                                  |
+| Luz (estúdio/bar/noite) · cenário     | `I` · `E` (estúdio ↔ greybox do bar)                                |
+| Material (PBR/argila/sem luz/arame)   | `M`; miniaturas das texturas no painel                              |
+| Referência de 1,75 m                  | `R`                                                                 |
+| Variante, cabelo, traje, estatísticas | painel à direita (origem, licença com trecho do arquivo, contagens) |
+
+Avaliar: silhueta e leitura a distância no bar, proporção entre candidatos (mesma escala), deformação ao andar/sentar,
+expressividade do rosto e adequação ao [conceito](../design/ART_DIRECTION.md). Nenhum candidato está no jogo ainda.
+
 ## Não implementado (marcos futuros)
 
-Avatar definitivo e personalização (M5), arte e cenário final (M4/M6), interações/cadeiras/portas (M7), chat (M8),
+Avatar definitivo e personalização (M5), cenário final (M6), interações/cadeiras/portas (M7), chat (M8),
 jogos e economia (M9/M10), tela de exclusão de conta, e-mail real. Jogadores não colidem entre si (ADR-0005).
 
 ## Registro
 
 - 2026-10-26: `npm run demo -- --smoke` aprovado repetidas vezes (idempotente); multiplayer verificado pelo proxy WS;
   navegador real (Edge) nas duas URLs com as duas contas: ambos online, posição idêntica nas duas telas, 0 erros.
+- 2026-10-26 (M4): `npm run demo:art -- --smoke` aprovado (19 arquivos); E2E da galeria no Edge aprovado; demo
+  multiplayer `--smoke` aprovada de novo após o M4 (portas/cluster isolados), 2 contas na mesma sala.
