@@ -17,6 +17,7 @@ declare global {
           snapshot: () => import('./debug/debug-snapshot.ts').DebugSnapshot;
           resetStats: () => void;
           dispose: () => { geometries: number; textures: number };
+          simulateNetworkDrop: () => void;
         }
       | undefined;
   }
@@ -47,6 +48,7 @@ async function startScene(): Promise<void> {
       hudParent: document.body,
       profile: resolveProfile(location.search),
       showHud: params.get('hud') !== '0',
+      onSessionEnded: () => void sessionEnded(),
     });
     const g = game;
     window.__bar = {
@@ -54,6 +56,7 @@ async function startScene(): Promise<void> {
       snapshot: () => g.snapshot(),
       resetStats: () => g.resetStats(),
       dispose: () => g.dispose(),
+      simulateNetworkDrop: () => g.simulateNetworkDrop(),
     };
   } catch (err) {
     console.error('falha ao iniciar a cena 3D', err);
@@ -78,11 +81,19 @@ function enter(user: PublicUser): void {
 
 async function logout(): Promise<void> {
   await starting;
+  stopScene(); // leaves the room first, so other players see us go at once
   const result = await api.logout();
-  stopScene();
   userBar.hide();
   // The cookie is cleared server-side even if this fails; the local session state is gone either way.
   panel.show('login', result.ok ? { notice: 'Você saiu da sua conta.' } : { error: errorMessage(result.code) });
+}
+
+/** The server closed the game connection because this session is no longer valid. */
+async function sessionEnded(): Promise<void> {
+  await starting;
+  stopScene();
+  userBar.hide();
+  panel.show('login', { error: 'Sua sessão foi encerrada. Entre novamente.' });
 }
 
 const panel = new AuthPanel(document.body, api, enter);

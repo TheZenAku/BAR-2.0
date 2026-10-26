@@ -100,6 +100,8 @@ export function errorMessage(code: ClientErrorCode, retryAfterSeconds?: number):
       return 'E-mail ou senha incorretos.';
     case 'email_unavailable':
       return 'Não foi possível criar a conta com este e-mail. Se ele já é seu, entre ou recupere a senha.';
+    case 'room_full':
+      return 'A sala está cheia. Tente novamente em instantes.';
     case 'invalid_token':
       return 'Link de recuperação inválido ou expirado. Peça um novo.';
     case 'rate_limited': {

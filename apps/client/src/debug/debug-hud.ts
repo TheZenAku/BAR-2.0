@@ -13,7 +13,19 @@ export function formatSnapshot(s: DebugSnapshot): string {
     `draw calls ${s.render.drawCalls}  ·  triângulos ${s.render.triangles}  ·  geo ${s.render.geometries}  ·  tex ${s.render.textures}  ·  shaders ${s.render.programs}`,
     `heap JS ${mem}  ·  perfil ${s.profile}`,
     `pos ${f1(p.x)} ${p.y.toFixed(2)} ${f1(p.z)}  ·  ${s.player.speed.toFixed(2)} m/s  ·  ${s.player.locomotion}${s.player.grounded ? '' : ' (no ar)'}  ·  anim ${s.animation}`,
+    netLine(s),
     'WASD/setas mover · Shift correr · clique: capturar mouse (Esc solta) · roda: zoom · F3: HUD',
+  ].join('\n');
+}
+
+function netLine(s: DebugSnapshot): string {
+  const n = s.net;
+  if (!n) return 'rede: desativada';
+  const rtt = n.rttMs === null ? 'n/d' : `${Math.round(n.rttMs)} ms`;
+  return [
+    `rede ${n.status} · jogadores ${n.players}/${n.maxPlayers} · RTT ${rtt} · snapshots ${n.snapshotsPerSec}/s`,
+    `entradas pendentes ${n.pendingInputs} · correções ${n.corrections} (última ${f1(n.lastCorrectionCm)} cm) · ` +
+      `interp ${n.interpDelayMs} ms · reconexões ${n.reconnections}`,
   ].join('\n');
 }
 
