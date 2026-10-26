@@ -1,6 +1,6 @@
 # Arquitetura
 
-Estado: M1. Decisões em [docs/decisions](../decisions/). Este documento descreve fronteiras e regras; detalhes de cada sistema
+Estado: M2. Decisões em [docs/decisions](../decisions/). Este documento descreve fronteiras e regras; detalhes de cada sistema
 entram quando o marco correspondente for executado.
 
 ## Visão lógica
@@ -25,10 +25,11 @@ entram quando o marco correspondente for executado.
 | -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------- |
 | `packages/shared`    | Schemas/contratos versionados (zod), constantes de protocolo. Sem I/O, sem DOM, sem Node APIs.                                               | bibliotecas puras                 |
 | `packages/game-core` | Simulação compartilhada: passo fixo, intenção de movimento, controlador Rapier (ADR-0003), nível como dados, locomoção. Sem DOM/render/rede. | `packages/*` (não `apps`), Rapier |
-| `apps/server`        | Processo autoritativo: config tipada, logging estruturado, HTTP, (futuro) salas e persistência.                                              | `packages/*`                      |
+| `apps/server`        | Processo autoritativo: config tipada, logs pino, API HTTP (Fastify), contas/sessões, PostgreSQL (Kysely); (M3) salas.                       | `packages/*`                      |
 | `apps/client`        | Renderização, UI, input, conexão. Nunca é fonte de verdade de estado sensível.                                                               | `packages/*`                      |
 
-`tests/e2e` (M1): smoke em navegador real (servidor + build de produção). Planejados, criados apenas quando houver uso
+`tests/e2e` (M1/M2): navegador real (PostgreSQL + servidor + build de produção). `tests/support`: PostgreSQL real
+para testes (Compose via `BAR_TEST_DATABASE_URL` ou `embedded-postgres`), um banco `bar_test_*` descartável por arquivo. Planejados, criados apenas quando houver uso
 real: `packages/game-content` (dados de interações/itens), `packages/asset-pipeline` + `assets/` (M4),
 `tests/multiplayer|performance` (M3), `infrastructure/` (M13).
 
@@ -52,13 +53,35 @@ game/game.ts  rAF ─► FixedStepper 60 Hz ─► game-core Simulation.tick(int
   geometrias na GPU (resta 1 textura: LUT DFG compartilhada pelo próprio Three.js).
 - Nível é dado (`LevelDef`): física e render leem a mesma fonte; no M6 os colisores virão do GLB.
 
+## Servidor — backend (M2)
+
+```
+main.ts  config (zod, falha rápida) → pino → pool pg/Kysely → migrações (lock) → Fastify → purga horária → SIGINT/SIGTERM
+app.ts   onRequest: headers de segurança + x-request-id · guarda de Origin/Content-Type em /api (CSRF)
+         rotas: /health (liveness) · /ready (PostgreSQL) · /api/v1/auth/{register,login,logout,session,recovery[/confirm]}
+                /api/v1/account (DELETE) · /api/v1/users/:publicId
+         erros: ApiError → { error: { code, message, requestId } } · banco indisponível → 503 · resto → 500 logado
+auth/    service.ts (regras; Kysely parametrizado) · password.ts (Argon2id nativo, PHC) · tokens.ts (256 bits + SHA-256)
+http/    errors · origin-guard (CSRF) · rate-limit (janela fixa em memória, por IP e por conta)
+db/      database (pool, ping, classificação de indisponibilidade) · schema (tipos) · migrations/ (append-only)
+mail/    Mailer: disabled | dev-outbox (sem provedor real)
+```
+
+- Tabelas: `users` (id interno bigint + `public_id` uuid, e-mail normalizado e único, hash Argon2id), `sessions` e
+  `password_reset_tokens` (só hash do token, expiração, cascade). Constraints repetem as regras da API no banco.
+- O id interno nunca sai do servidor; respostas só trazem `PublicUser` (`id` público, nome, data). Detalhes e políticas
+  (sessão, CSRF, enumeração, rate limits, recuperação, exclusão de dados): [ADR-0004](../decisions/ADR-0004-backend-auth.md).
+- Cliente: `auth/` (AuthApi tipada, painel acessível, barra do usuário). Sem sessão a cena 3D não é carregada; logout
+  descarta a cena. Vite faz proxy de `/api` (mesma origem: cookie first-party, sem CORS).
+
 ## Regras verificadas por gate
 
 - `npm run check:arch`: pacotes não dependem de apps; sem ciclos entre workspaces nem entre módulos; todo `@bar/*` importado
   está declarado no `package.json`; nenhum import relativo sai do próprio workspace.
 - `npm run check:licenses`: dependências de produção apenas com licenças da allowlist.
 - TypeScript estrito (`strict`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, `erasableSyntaxOnly`).
-- Contratos de rede/HTTP são schemas zod **estritos** em `packages/shared`; o servidor valida toda entrada e também a própria saída.
+- Contratos de rede/HTTP são schemas zod em `packages/shared`: entradas **estritas** (servidor valida toda entrada e a própria
+  saída); respostas lidas de forma tolerante pelo cliente. API versionada por prefixo (`/api/v1`).
 
 ## Princípios de autoridade e segurança
 
