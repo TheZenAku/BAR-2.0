@@ -1,0 +1,368 @@
+{
+  "date": "2026-10-26T19:56:09.203Z",
+  "reps": 5,
+  "sizes": {
+    "compat": {
+      "wasmKB": 3010,
+      "wasmGzipKB": 1148,
+      "mjsKB": 4239,
+      "mjsGzipKB": 1606,
+      "bundleKB": 4234,
+      "bundleGzipKB": 1606
+    },
+    "deterministic": {
+      "wasmKB": 3033,
+      "wasmGzipKB": 1152,
+      "mjsKB": 4270,
+      "mjsGzipKB": 1612,
+      "bundleKB": 4265,
+      "bundleGzipKB": 1612
+    }
+  },
+  "table": [
+    {
+      "case": "compat | node v26.12.1",
+      "initMsMedian": 75.2,
+      "stepAvgMsMedian": 1.0664,
+      "stepP95MsMedian": 2.0124,
+      "hashes": "01a62fdd"
+    },
+    {
+      "case": "deterministic | node v26.12.1",
+      "initMsMedian": 77,
+      "stepAvgMsMedian": 1.0915,
+      "stepP95MsMedian": 2.4906,
+      "hashes": "01a62fdd"
+    },
+    {
+      "case": "compat | msedge 156.0.4314.42",
+      "initMsMedian": 165.8,
+      "stepAvgMsMedian": 0.9307,
+      "stepP95MsMedian": 2.1,
+      "hashes": "01a62fdd"
+    },
+    {
+      "case": "deterministic | msedge 156.0.4314.42",
+      "initMsMedian": 153.4,
+      "stepAvgMsMedian": 0.9257,
+      "stepP95MsMedian": 2.2,
+      "hashes": "01a62fdd"
+    },
+    {
+      "case": "compat | firefox 157.0",
+      "initMsMedian": 221,
+      "stepAvgMsMedian": 0.9058,
+      "stepP95MsMedian": 2,
+      "hashes": "01a62fdd"
+    },
+    {
+      "case": "deterministic | firefox 157.0",
+      "initMsMedian": 251,
+      "stepAvgMsMedian": 0.9367,
+      "stepP95MsMedian": 2,
+      "hashes": "01a62fdd"
+    }
+  ],
+  "runs": [
+    {
+      "build": "compat",
+      "runtime": "node v26.12.1",
+      "rep": 0,
+      "version": "0.21.0",
+      "initMs": 84,
+      "stepAvgMs": 1.0664,
+      "stepP95Ms": 2.5009,
+      "hash": "01a62fdd"
+    },
+    {
+      "build": "compat",
+      "runtime": "node v26.12.1",
+      "rep": 1,
+      "version": "0.21.0",
+      "initMs": 75.1,
+      "stepAvgMs": 0.9148,
+      "stepP95Ms": 1.893,
+      "hash": "01a62fdd"
+    },
+    {
+      "build": "compat",
+      "runtime": "node v26.12.1",
+      "rep": 2,
+      "version": "0.21.0",
+      "initMs": 90,
+      "stepAvgMs": 1.0712,
+      "stepP95Ms": 2.0124,
+      "hash": "01a62fdd"
+    },
+    {
+      "build": "compat",
+      "runtime": "node v26.12.1",
+      "rep": 3,
+      "version": "0.21.0",
+      "initMs": 75.2,
+      "stepAvgMs": 1.1393,
+      "stepP95Ms": 1.7885,
+      "hash": "01a62fdd"
+    },
+    {
+      "build": "compat",
+      "runtime": "node v26.12.1",
+      "rep": 4,
+      "version": "0.21.0",
+      "initMs": 72.7,
+      "stepAvgMs": 1.0173,
+      "stepP95Ms": 2.302,
+      "hash": "01a62fdd"
+    },
+    {
+      "build": "deterministic",
+      "runtime": "node v26.12.1",
+      "rep": 0,
+      "version": "0.21.0",
+      "initMs": 78.7,
+      "stepAvgMs": 1.0915,
+      "stepP95Ms": 2.5729,
+      "hash": "01a62fdd"
+    },
+    {
+      "build": "deterministic",
+      "runtime": "node v26.12.1",
+      "rep": 1,
+      "version": "0.21.0",
+      "initMs": 72.1,
+      "stepAvgMs": 1.0754,
+      "stepP95Ms": 2.3913,
+      "hash": "01a62fdd"
+    },
+    {
+      "build": "deterministic",
+      "runtime": "node v26.12.1",
+      "rep": 2,
+      "version": "0.21.0",
+      "initMs": 106.5,
+      "stepAvgMs": 1.3194,
+      "stepP95Ms": 2.4906,
+      "hash": "01a62fdd"
+    },
+    {
+      "build": "deterministic",
+      "runtime": "node v26.12.1",
+      "rep": 3,
+      "version": "0.21.0",
+      "initMs": 76.1,
+      "stepAvgMs": 1.034,
+      "stepP95Ms": 2.0092,
+      "hash": "01a62fdd"
+    },
+    {
+      "build": "deterministic",
+      "runtime": "node v26.12.1",
+      "rep": 4,
+      "version": "0.21.0",
+      "initMs": 77,
+      "stepAvgMs": 1.2205,
+      "stepP95Ms": 2.7491,
+      "hash": "01a62fdd"
+    },
+    {
+      "build": "compat",
+      "runtime": "msedge 156.0.4314.42",
+      "rep": 0,
+      "version": "0.21.0",
+      "initMs": 125.1,
+      "stepAvgMs": 1.2123,
+      "stepP95Ms": 3.5,
+      "hash": "01a62fdd"
+    },
+    {
+      "build": "compat",
+      "runtime": "msedge 156.0.4314.42",
+      "rep": 1,
+      "version": "0.21.0",
+      "initMs": 166,
+      "stepAvgMs": 0.9307,
+      "stepP95Ms": 1.9,
+      "hash": "01a62fdd"
+    },
+    {
+      "build": "compat",
+      "runtime": "msedge 156.0.4314.42",
+      "rep": 2,
+      "version": "0.21.0",
+      "initMs": 140.5,
+      "stepAvgMs": 0.7851,
+      "stepP95Ms": 1.9,
+      "hash": "01a62fdd"
+    },
+    {
+      "build": "compat",
+      "runtime": "msedge 156.0.4314.42",
+      "rep": 3,
+      "version": "0.21.0",
+      "initMs": 165.8,
+      "stepAvgMs": 0.874,
+      "stepP95Ms": 2.1,
+      "hash": "01a62fdd"
+    },
+    {
+      "build": "compat",
+      "runtime": "msedge 156.0.4314.42",
+      "rep": 4,
+      "version": "0.21.0",
+      "initMs": 167.8,
+      "stepAvgMs": 1.0065,
+      "stepP95Ms": 2.6,
+      "hash": "01a62fdd"
+    },
+    {
+      "build": "deterministic",
+      "runtime": "msedge 156.0.4314.42",
+      "rep": 0,
+      "version": "0.21.0",
+      "initMs": 153.4,
+      "stepAvgMs": 0.9205,
+      "stepP95Ms": 2.1,
+      "hash": "01a62fdd"
+    },
+    {
+      "build": "deterministic",
+      "runtime": "msedge 156.0.4314.42",
+      "rep": 1,
+      "version": "0.21.0",
+      "initMs": 171.3,
+      "stepAvgMs": 1.6733,
+      "stepP95Ms": 4,
+      "hash": "01a62fdd"
+    },
+    {
+      "build": "deterministic",
+      "runtime": "msedge 156.0.4314.42",
+      "rep": 2,
+      "version": "0.21.0",
+      "initMs": 144.3,
+      "stepAvgMs": 0.9257,
+      "stepP95Ms": 2.2,
+      "hash": "01a62fdd"
+    },
+    {
+      "build": "deterministic",
+      "runtime": "msedge 156.0.4314.42",
+      "rep": 3,
+      "version": "0.21.0",
+      "initMs": 142.8,
+      "stepAvgMs": 0.8588,
+      "stepP95Ms": 2,
+      "hash": "01a62fdd"
+    },
+    {
+      "build": "deterministic",
+      "runtime": "msedge 156.0.4314.42",
+      "rep": 4,
+      "version": "0.21.0",
+      "initMs": 174.3,
+      "stepAvgMs": 0.9367,
+      "stepP95Ms": 2.2,
+      "hash": "01a62fdd"
+    },
+    {
+      "build": "compat",
+      "runtime": "firefox 157.0",
+      "rep": 0,
+      "version": "0.21.0",
+      "initMs": 277,
+      "stepAvgMs": 1.6558,
+      "stepP95Ms": 3,
+      "hash": "01a62fdd"
+    },
+    {
+      "build": "compat",
+      "runtime": "firefox 157.0",
+      "rep": 1,
+      "version": "0.21.0",
+      "initMs": 274,
+      "stepAvgMs": 0.975,
+      "stepP95Ms": 2,
+      "hash": "01a62fdd"
+    },
+    {
+      "build": "compat",
+      "runtime": "firefox 157.0",
+      "rep": 2,
+      "version": "0.21.0",
+      "initMs": 221,
+      "stepAvgMs": 0.8942,
+      "stepP95Ms": 2,
+      "hash": "01a62fdd"
+    },
+    {
+      "build": "compat",
+      "runtime": "firefox 157.0",
+      "rep": 3,
+      "version": "0.21.0",
+      "initMs": 206,
+      "stepAvgMs": 0.7925,
+      "stepP95Ms": 2,
+      "hash": "01a62fdd"
+    },
+    {
+      "build": "compat",
+      "runtime": "firefox 157.0",
+      "rep": 4,
+      "version": "0.21.0",
+      "initMs": 201,
+      "stepAvgMs": 0.9058,
+      "stepP95Ms": 2,
+      "hash": "01a62fdd"
+    },
+    {
+      "build": "deterministic",
+      "runtime": "firefox 157.0",
+      "rep": 0,
+      "version": "0.21.0",
+      "initMs": 277,
+      "stepAvgMs": 1.0375,
+      "stepP95Ms": 2,
+      "hash": "01a62fdd"
+    },
+    {
+      "build": "deterministic",
+      "runtime": "firefox 157.0",
+      "rep": 1,
+      "version": "0.21.0",
+      "initMs": 214,
+      "stepAvgMs": 0.9367,
+      "stepP95Ms": 2,
+      "hash": "01a62fdd"
+    },
+    {
+      "build": "deterministic",
+      "runtime": "firefox 157.0",
+      "rep": 2,
+      "version": "0.21.0",
+      "initMs": 316,
+      "stepAvgMs": 0.8858,
+      "stepP95Ms": 2,
+      "hash": "01a62fdd"
+    },
+    {
+      "build": "deterministic",
+      "runtime": "firefox 157.0",
+      "rep": 3,
+      "version": "0.21.0",
+      "initMs": 202,
+      "stepAvgMs": 0.9458,
+      "stepP95Ms": 2,
+      "hash": "01a62fdd"
+    },
+    {
+      "build": "deterministic",
+      "runtime": "firefox 157.0",
+      "rep": 4,
+      "version": "0.21.0",
+      "initMs": 251,
+      "stepAvgMs": 0.9292,
+      "stepP95Ms": 2,
+      "hash": "01a62fdd"
+    }
+  ]
+}

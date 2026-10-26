@@ -1,0 +1,14 @@
+{
+  "name": "bar-rapier-builds",
+  "private": true,
+  "version": "0.0.0",
+  "description": "M1: objective comparison of Rapier standard (compat) vs cross-platform deterministic build.",
+  "type": "module",
+  "scripts": {
+    "bench": "node tools/bench.mjs"
+  },
+  "dependencies": {
+    "@dimforge/rapier3d-compat": "0.21.0",
+    "@dimforge/rapier3d-deterministic-compat": "0.21.0"
+  }
+}
