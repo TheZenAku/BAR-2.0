@@ -1,6 +1,6 @@
 # Arquitetura
 
-Estado: M2. Decisões em [docs/decisions](../decisions/). Este documento descreve fronteiras e regras; detalhes de cada sistema
+Estado: M3. Decisões em [docs/decisions](../decisions/). Este documento descreve fronteiras e regras; detalhes de cada sistema
 entram quando o marco correspondente for executado.
 
 ## Visão lógica
@@ -31,7 +31,8 @@ entram quando o marco correspondente for executado.
 `tests/e2e` (M1/M2): navegador real (PostgreSQL + servidor + build de produção). `tests/support`: PostgreSQL real
 para testes (Compose via `BAR_TEST_DATABASE_URL` ou `embedded-postgres`), um banco `bar_test_*` descartável por arquivo. Planejados, criados apenas quando houver uso
 real: `packages/game-content` (dados de interações/itens), `packages/asset-pipeline` + `assets/` (M4),
-`tests/multiplayer|performance` (M3), `infrastructure/` (M13).
+`tests/performance`, `infrastructure/` (M13). Multiplayer: testes de integração/carga com WebSocket real em
+`apps/server/src/game/*.int.test.ts` e E2E com 2 navegadores em `tests/e2e/multiplayer.e2e.mjs`.
 
 ## Cliente — vertical slice (M1)
 
@@ -73,6 +74,23 @@ mail/    Mailer: disabled | dev-outbox (sem provedor real)
   (sessão, CSRF, enumeração, rate limits, recuperação, exclusão de dados): [ADR-0004](../decisions/ADR-0004-backend-auth.md).
 - Cliente: `auth/` (AuthApi tipada, painel acessível, barra do usuário). Sem sessão a cena 3D não é carregada; logout
   descarta a cena. Vite faz proxy de `/api` (mesma origem: cookie first-party, sem CORS).
+
+## Multiplayer (M3)
+
+```
+cliente                                    servidor (mesmo processo/porta do Fastify)
+ POST /api/v1/game/join (cookie) ───────►  requireUser → matchMaker.joinById → vaga vinculada à conta (15 s)
+ WS /game/<proc>/<room>?sessionId ──────►  beforeUpgrade: Origin + cookie (reconexão: autentica e confere dono)
+                                           onAuth: AuthService.authenticate(cookie) = conta da vaga
+ 'i' [seq,frente,lado,correr,yaw]×≤8 ───►  BarRoom → GameWorld: fila por jogador, orçamento de tempo, 60 Hz
+ ◄─── 'w' welcome · 'r' roster · 's' snapshot 20 Hz {t, ack, me (estado completo), p (outros)}
+```
+
+- `apps/server/src/game/`: `attach.ts` (Colyseus no servidor HTTP; só o transporte WS), `room.ts` (identidade,
+  sessão, revogação, loop), `world.ts` (simulação autoritativa sem rede). `app.ts`: rota `/api/v1/game/join`.
+- `apps/client/src/net/`: `game-connection.ts` (vaga + SDK, reconexão, RTT), `prediction.ts` (predição/reconciliação),
+  `interpolation.ts` (relógio do servidor + trilhas remotas), `net-badge.ts`. `game/remote-players.ts`: avatares remotos.
+- Vite (dev/preview) faz proxy de `/game` com `ws: true`. Decisões e números: [ADR-0005](../decisions/ADR-0005-multiplayer.md).
 
 ## Regras verificadas por gate
 
