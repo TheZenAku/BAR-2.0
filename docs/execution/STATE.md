@@ -23,7 +23,7 @@
 ## NÃO VERIFICADO / riscos
 
 - **Escolha artística:** nenhuma; direção em [ART_DIRECTION.md](../design/ART_DIRECTION.md) é proposta.
-- Reprodutibilidade em Linux: job `assets` do CI (Kenney + KayKit) ainda sem execução registrada.
+- Reprodutibilidade entre plataformas verificada só para Kenney + KayKit (CI Linux); Quaternius só no Windows.
 - Quaternius só é baixável pelo fluxo do itch.io (Playwright); não roda no CI. Se o itch.io mudar a página, o fetch
   falha (com mensagem) — os originais em cache continuam válidos.
 - Blender e KTX2 ausentes na máquina; LOD, atlas e KTX2 adiados até haver cena com vários avatares (M5/M6).
@@ -33,7 +33,8 @@
 
 ## CI
 
-Run 40411173387 (`e46a14f`, M3): verde. M4: ver [TESTS.md](TESTS.md).
+Run 40418272350 (`2d5bec9`, M4): verify Node 24 e 26 + e2e Chromium + `assets` (validação glTF e hashes idênticos ao
+manifest em Linux) — todos verdes.
 
 ## Próxima ação
 
