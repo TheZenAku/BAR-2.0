@@ -10,3 +10,5 @@ Thumbs.db
 .vite/
 # Generated assets are reproducible from assets/source via the pipeline.
 assets/generated/
+# E2E artifacts (screenshots, metrics)
+tests/e2e/output/

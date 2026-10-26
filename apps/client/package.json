@@ -2,7 +2,7 @@
   "name": "@bar/client",
   "private": true,
   "version": "0.0.0",
-  "description": "Cliente web 3D do B.A.R. (M0: apenas esqueleto de boot).",
+  "description": "Cliente web 3D do B.A.R. (M1: vertical slice — greybox, avatar técnico, câmera, métricas).",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -11,6 +11,7 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
+    "@bar/game-core": "0.0.0",
     "@bar/shared": "0.0.0",
     "three": "0.186.1"
   },

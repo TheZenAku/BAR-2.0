@@ -1,0 +1,16 @@
+export type { MotorResult } from './character.ts';
+export { CharacterMotor } from './character.ts';
+export { BODY_CENTER_Y, CHARACTER, MOVEMENT, SIM_DT, SIM_HZ } from './config.ts';
+export { FixedStepper } from './fixed-step.ts';
+export type { BoxDef, LevelDef, Surface } from './level.ts';
+export { aabb, GREYBOX_BAR, rampX } from './level.ts';
+export type { Locomotion } from './locomotion.ts';
+export { nextLocomotion } from './locomotion.ts';
+export type { Quat, Vec3 } from './math.ts';
+export { clamp, eulerXYZToQuat, lerp, lerpAngle, lerpVec3, vec3, wrapAngle } from './math.ts';
+export type { MoveIntent, Planar } from './movement.ts';
+export { IDLE_INTENT, sanitizeIntent, targetVelocity } from './movement.ts';
+export type { RapierApi } from './physics.ts';
+export { loadRapier, PhysicsWorld } from './physics.ts';
+export type { PlayerSnapshot } from './simulation.ts';
+export { Simulation } from './simulation.ts';
