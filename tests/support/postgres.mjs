@@ -37,7 +37,8 @@ export async function startPostgres({
   if (external) return { adminUrl: external, source: 'BAR_TEST_DATABASE_URL', stop: async () => {} };
 
   const { default: EmbeddedPostgres } = await import('embedded-postgres');
-  const databaseDir = join(ROOT, '.data', name);
+  // BAR_PG_SUFFIX selects another cluster directory (e.g. when a stale process still holds the default one).
+  const databaseDir = join(ROOT, '.data', `${name}${process.env.BAR_PG_SUFFIX ?? ''}`);
   const actualPort = port ?? (await freePort());
   const logs = [];
   const pg = new EmbeddedPostgres({
@@ -63,7 +64,7 @@ export async function startPostgres({
   }
   return {
     adminUrl: `postgres://${encodeURIComponent(user)}:${encodeURIComponent(password)}@127.0.0.1:${actualPort}/postgres`,
-    source: `embedded-postgres (.data/${name})`,
+    source: `embedded-postgres (${databaseDir})`,
     stop: () => pg.stop(),
   };
 }
