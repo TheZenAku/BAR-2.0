@@ -200,21 +200,48 @@ for (const origin of WEB_ORIGINS) {
   if (ok) reachable.push(origin);
 }
 if (reachable.length === 0) await fail('cliente web não respondeu', `verifique a porta ${WEB_PORT}.`);
-const loginVia = await fetch(`${reachable[0]}/api/v1/auth/login`, {
-  method: 'POST',
-  headers: { 'content-type': 'application/json', origin: reachable[0] },
-  body: JSON.stringify({ email: accounts[0].email, password: accounts[0].password }),
-});
-if (loginVia.status !== 200) await fail(`login pelo proxy do cliente retornou ${loginVia.status}`);
-const viaCookie = loginVia.headers
-  .getSetCookie()
-  .find((c) => c.startsWith('bar_sid='))
-  ?.split(';')[0];
-await fetch(`${reachable[0]}/api/v1/auth/logout`, {
-  method: 'POST',
-  headers: { 'content-type': 'application/json', origin: reachable[0], cookie: viaCookie ?? '' },
-  body: '{}',
-});
+
+// 7. Multiplayer through the same proxy a browser uses: both accounts log in, take a seat, open the game WebSocket
+//    and must see each other in the shared room. Then they leave and log out (no sessions left behind).
+const origin = reachable[0];
+const viaProxy = (path, cookie, body = {}) =>
+  fetch(`${origin}${path}`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', origin, ...(cookie ? { cookie } : {}) },
+    body: JSON.stringify(body),
+  });
+const { Client } = await import('@colyseus/sdk');
+const joined = [];
+try {
+  for (const a of accounts) {
+    const login = await viaProxy('/api/v1/auth/login', undefined, { email: a.email, password: a.password });
+    if (login.status !== 200) throw new Error(`login de ${a.email} pelo proxy retornou ${login.status}`);
+    const cookie = login.headers
+      .getSetCookie()
+      .find((c) => c.startsWith('bar_sid='))
+      ?.split(';')[0];
+    const seat = await viaProxy('/api/v1/game/join', cookie);
+    if (seat.status !== 200) throw new Error(`reserva de vaga retornou ${seat.status}`);
+    const room = await new Client(`${origin}/game`, { headers: { cookie, origin } }).consumeSeatReservation(
+      await seat.json(),
+    );
+    const entry = { room, cookie, players: 0 };
+    room.onMessage('w', (w) => (entry.players = w.players.length));
+    room.onMessage('r', (r) => (entry.players = r.players.length));
+    room.onMessage('s', () => {});
+    joined.push(entry);
+  }
+  if (!(await waitFor(async () => joined.every((j) => j.players === accounts.length), 5000)))
+    throw new Error('as duas contas não se viram na sala');
+} catch (e) {
+  await fail(`multiplayer: ${e.message}`, 'veja os logs da API acima.');
+} finally {
+  for (const j of joined) {
+    await j.room.leave(true).catch(() => {});
+    await viaProxy('/api/v1/auth/logout', j.cookie);
+  }
+}
+step('multiplayer verificado: 2 contas na mesma sala via WebSocket.');
 
 console.log(`
 ================================ B.A.R. — DEMO LOCAL ================================
@@ -226,7 +253,8 @@ ${accounts.map((a) => `  ${a.displayName.padEnd(10)} e-mail: ${a.email.padEnd(20
 
 Controles: WASD/setas mover · Shift correr · clique no jogo captura o mouse (Esc solta)
            mouse gira a câmera · roda do mouse: zoom · F3: HUD · ?gfx=low|medium|high na URL
-Dois jogadores: use uma janela anônima (ou outro navegador) para a segunda conta.
+Multiplayer: conta 1 numa janela normal, conta 2 numa janela anônima (ou outro navegador, ou
+           a outra URL acima). Canto inferior esquerdo: conexão e nº de jogadores; F3: rede.
 Ctrl+C encerra tudo (API, cliente e PostgreSQL de demonstração).
 ======================================================================================
 `);

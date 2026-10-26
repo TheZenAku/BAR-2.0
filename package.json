@@ -29,7 +29,7 @@
     "check:arch": "node scripts/check-architecture.mjs",
     "check:licenses": "node scripts/check-licenses.mjs",
     "verify": "npm run lint && npm run typecheck && npm run test && npm run build && npm run check:arch && npm run check:licenses",
-    "test:e2e": "npm run build -w @bar/client && node tests/e2e/boot.e2e.mjs",
+    "test:e2e": "npm run build -w @bar/client && node tests/e2e/boot.e2e.mjs && node tests/e2e/multiplayer.e2e.mjs",
     "test:unit": "vitest run --project unit",
     "test:integration": "vitest run --project integration"
   },
