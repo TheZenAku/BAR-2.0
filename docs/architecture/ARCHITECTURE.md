@@ -25,7 +25,7 @@ entram quando o marco correspondente for executado.
 | -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------- |
 | `packages/shared`    | Schemas/contratos versionados (zod), constantes de protocolo. Sem I/O, sem DOM, sem Node APIs.                                               | bibliotecas puras                 |
 | `packages/game-core` | Simulação compartilhada: passo fixo, intenção de movimento, controlador Rapier (ADR-0003), nível como dados, locomoção. Sem DOM/render/rede. | `packages/*` (não `apps`), Rapier |
-| `apps/server`        | Processo autoritativo: config tipada, logs pino, API HTTP (Fastify), contas/sessões, PostgreSQL (Kysely); (M3) salas.                       | `packages/*`                      |
+| `apps/server`        | Processo autoritativo: config tipada, logs pino, API HTTP (Fastify), contas/sessões, PostgreSQL (Kysely); (M3) salas.                        | `packages/*`                      |
 | `apps/client`        | Renderização, UI, input, conexão. Nunca é fonte de verdade de estado sensível.                                                               | `packages/*`                      |
 
 `tests/e2e` (M1/M2): navegador real (PostgreSQL + servidor + build de produção). `tests/support`: PostgreSQL real

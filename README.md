@@ -5,12 +5,12 @@ Jogo social multiplayer 3D para navegadores, ambientado em um bar brasileiro. Es
 
 ## Pré-requisitos
 
-| Ferramenta | Versão                                | Observação                                               |
-| ---------- | ------------------------------------- | -------------------------------------------------------- |
-| Node.js    | ≥ 24.7 (LTS; `.nvmrc` = 24)           | Inclui npm ≥ 11. Validado localmente em 26.12.1. 24.7+ tem Argon2 nativo |
-| Git        | qualquer versão recente               | `core.autocrlf=false` recomendado (o repositório usa LF) |
+| Ferramenta | Versão                      | Observação                                                               |
+| ---------- | --------------------------- | ------------------------------------------------------------------------ |
+| Node.js    | ≥ 24.7 (LTS; `.nvmrc` = 24) | Inclui npm ≥ 11. Validado localmente em 26.12.1. 24.7+ tem Argon2 nativo |
+| Git        | qualquer versão recente     | `core.autocrlf=false` recomendado (o repositório usa LF)                 |
 
-| Docker     | opcional                              | Para PostgreSQL via `compose.yaml`. Sem Docker: `npm run db:local` |
+| Docker | opcional | Para PostgreSQL via `compose.yaml`. Sem Docker: `npm run db:local` |
 
 PostgreSQL 18 é obrigatório para o servidor e para `npm test`. Os testes usam `BAR_TEST_DATABASE_URL` (servidor descartável)
 ou, sem ela, sobem PostgreSQL real local via `embedded-postgres` (dados em `.data/`, ignorado pelo Git; nada é instalado
@@ -32,19 +32,19 @@ Com `MAIL_TRANSPORT=dev-outbox` (padrão do `.env.example`), links de recuperaç
 
 ## Scripts
 
-| Script                            | O que faz                                                     |
-| --------------------------------- | ------------------------------------------------------------- |
-| `npm run lint` / `npm run format` | Biome (lint + formatação)                                     |
-| `npm run typecheck`               | TypeScript estrito em cada workspace                          |
-| `npm test`                        | Vitest: unitários + integração com PostgreSQL real            |
-| `npm run test:unit` / `test:integration` | Só um dos projetos do Vitest                           |
-| `npm run db:up` / `db:local`      | PostgreSQL via Docker Compose / binários locais sem Docker    |
-| `npm run db:migrate`              | Aplica migrações pendentes (`-- down` reverte a última)       |
-| `npm run build`                   | Build de produção do cliente (o servidor roda TS diretamente) |
-| `npm run check:arch`              | Ciclos, direção de dependências e imports entre workspaces    |
-| `npm run check:licenses`          | Licenças das dependências de produção (allowlist)             |
-| `npm run verify`                  | Todos os gates acima, na ordem do CI                          |
-| `npm run test:e2e`                | Navegador real: login/logout + cena (Edge padrão; `BAR_E2E_BROWSER`) |
+| Script                                   | O que faz                                                            |
+| ---------------------------------------- | -------------------------------------------------------------------- |
+| `npm run lint` / `npm run format`        | Biome (lint + formatação)                                            |
+| `npm run typecheck`                      | TypeScript estrito em cada workspace                                 |
+| `npm test`                               | Vitest: unitários + integração com PostgreSQL real                   |
+| `npm run test:unit` / `test:integration` | Só um dos projetos do Vitest                                         |
+| `npm run db:up` / `db:local`             | PostgreSQL via Docker Compose / binários locais sem Docker           |
+| `npm run db:migrate`                     | Aplica migrações pendentes (`-- down` reverte a última)              |
+| `npm run build`                          | Build de produção do cliente (o servidor roda TS diretamente)        |
+| `npm run check:arch`                     | Ciclos, direção de dependências e imports entre workspaces           |
+| `npm run check:licenses`                 | Licenças das dependências de produção (allowlist)                    |
+| `npm run verify`                         | Todos os gates acima, na ordem do CI                                 |
+| `npm run test:e2e`                       | Navegador real: login/logout + cena (Edge padrão; `BAR_E2E_BROWSER`) |
 
 Na cena: WASD/setas movem, Shift corre, clique captura o mouse (Esc solta), roda = zoom, F3 = HUD de métricas.
 Perfil gráfico: `?gfx=low|medium|high` na URL.
