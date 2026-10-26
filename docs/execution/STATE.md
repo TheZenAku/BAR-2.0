@@ -1,6 +1,6 @@
 # STATE
 
-- **Marco:** M2 — Backend · **Status:** IMPLEMENTADO e verificado localmente com PostgreSQL real; CI: ver abaixo
+- **Marco:** M2 — Backend · **Status:** CONCLUÍDO (local + CI com PostgreSQL real), aguardando aprovação humana
 - **M1:** CONCLUÍDO tecnicamente; **revisão visual humana NÃO VERIFICADA** (não registrada em nenhum documento).
 - **Data:** 2026-10-26
 
@@ -28,7 +28,7 @@ balcão · câmera contra paredes (sem atravessar) · andar/correr (Shift) e tra
 
 ## NÃO VERIFICADO / bloqueios
 
-- Docker Compose local (Docker ausente nesta máquina); validado apenas no CI.
+- Docker Compose nesta máquina (Docker ausente); `compose.yaml` validado no CI.
 - Envio real de e-mail: não existe provedor (`MAIL_TRANSPORT=disabled|dev-outbox`). Recuperação funciona ponta a ponta
   só com o outbox de desenvolvimento/testes.
 - Rate limit em memória: válido para um processo (ADR-0002); múltiplos processos exigem store compartilhado.
@@ -38,7 +38,9 @@ balcão · câmera contra paredes (sem atravessar) · andar/correr (Shift) e tra
 
 ## CI
 
-PENDENTE — atualizado após o push deste marco.
+Run 40400920825 (`c096ee3`): verify Node 24 e 26 (inclui integração com PostgreSQL 18.4 do `compose.yaml` e
+`npm run db:migrate` em banco limpo) + e2e Chromium/Linux — todos verdes. O run anterior (40400690422) falhou só no lint
+de formatação Markdown; corrigido. Clone limpo: `npm ci` + `verify` verdes (126 testes).
 
 ## Próxima ação
 
