@@ -46,7 +46,9 @@ export async function startPostgres({
     user,
     password,
     persistent: true,
-    postgresFlags: ['-c', 'listen_addresses=127.0.0.1'],
+    // io_method=sync: no PG18 io_worker processes. On Windows an io_worker sometimes outlived its stopped server and
+    // kept the cluster's shared memory, so the next start failed ('pre-existing shared memory block is still in use').
+    postgresFlags: ['-c', 'listen_addresses=127.0.0.1', '-c', 'io_method=sync'],
     onLog: (m) => logs.push(String(m)),
     onError: (m) => logs.push(String(m)),
   });
