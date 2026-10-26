@@ -14,3 +14,5 @@ assets/generated/
 tests/e2e/output/
 # Local PostgreSQL clusters (embedded-postgres) and the dev mail outbox
 .data/
+# Downloaded asset originals and generated candidates (npm run assets:fetch / assets:build)
+.cache/

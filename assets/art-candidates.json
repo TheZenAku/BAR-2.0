@@ -1,0 +1,264 @@
+{
+  "$comment": "M4: character candidates for human review. Originals are downloaded from the official sources below and verified by SHA-256 (npm run assets:fetch); they are not committed. npm run assets:build normalizes them into .cache/assets/generated. Licenses verified in the files shipped with each pack (licenseEvidence: one per pack; npm run assets:build fails unless each states CC0).",
+  "targetHeight": 1.75,
+  "retrievedAt": "2026-10-26",
+  "sources": {
+    "kenney-mini": {
+      "method": "http",
+      "url": "https://kenney.nl/media/pages/assets/mini-characters/bfc7e272b4-1774770718/kenney_mini-characters.zip",
+      "page": "https://kenney.nl/assets/mini-characters",
+      "file": "kenney_mini-characters.zip",
+      "sha256": "9e1d48e6d7b8479ebbe84df71eb5bd8e1b3f0da546dea641890dccc8a02d0999",
+      "bytes": 2403059,
+      "extract": true
+    },
+    "kaykit-knight": {
+      "method": "http",
+      "url": "https://raw.githubusercontent.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0/672074b73ba276876a19e8816ecdc5241817ab47/addons/kaykit_character_pack_adventures/Characters/gltf/Knight.glb",
+      "file": "Knight.glb",
+      "sha256": "60428e3abc09ba83e595d256e3af8c5c976b46cdae599f0802fc82b4a3445168",
+      "bytes": 3659532
+    },
+    "kaykit-rogue": {
+      "method": "http",
+      "url": "https://raw.githubusercontent.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0/672074b73ba276876a19e8816ecdc5241817ab47/addons/kaykit_character_pack_adventures/Characters/gltf/Rogue.glb",
+      "file": "Rogue.glb",
+      "sha256": "e825437cd4d2ee9c1960b517a74a69101e33eb409ae7fa8cedc7134a998fbb7d",
+      "bytes": 3616284
+    },
+    "kaykit-mage": {
+      "method": "http",
+      "url": "https://raw.githubusercontent.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0/672074b73ba276876a19e8816ecdc5241817ab47/addons/kaykit_character_pack_adventures/Characters/gltf/Mage.glb",
+      "file": "Mage.glb",
+      "sha256": "cf898585da33fab50c724d31605fb931eb2912e6d2280092141e98ca81ad507d",
+      "bytes": 3589240
+    },
+    "kaykit-barbarian": {
+      "method": "http",
+      "url": "https://raw.githubusercontent.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0/672074b73ba276876a19e8816ecdc5241817ab47/addons/kaykit_character_pack_adventures/Characters/gltf/Barbarian.glb",
+      "file": "Barbarian.glb",
+      "sha256": "cefc311a0e10c7858b6141f5ada7e33268727564fb8ac1347aab97d000669cc6",
+      "bytes": 3613268
+    },
+    "kaykit-license": {
+      "method": "http",
+      "url": "https://raw.githubusercontent.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0/672074b73ba276876a19e8816ecdc5241817ab47/LICENSE.txt",
+      "page": "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0",
+      "file": "LICENSE.txt",
+      "sha256": "ae322141814056dda0deea7540d74c41d87aee1da319977cd1bd84ee5a923629",
+      "bytes": 891
+    },
+    "quaternius-ubc": {
+      "method": "itch",
+      "page": "https://quaternius.itch.io/universal-base-characters",
+      "upload": "Universal Base Characters[Standard].zip",
+      "file": "ubc-standard.zip",
+      "sha256": "fdbf1804c90dfc1ea03e992bff7da2dfd1a79318e13270a660180f9308455f40",
+      "bytes": 128968391,
+      "extract": true
+    },
+    "quaternius-ual": {
+      "method": "itch",
+      "page": "https://quaternius.itch.io/universal-animation-library",
+      "upload": "Universal Animation Library[Standard].zip",
+      "file": "ual-standard.zip",
+      "sha256": "cc73fc4e495b82958207316596317a3f40b9fa38065bde1027937452da537724",
+      "bytes": 15904933,
+      "extract": true
+    },
+    "quaternius-outfits": {
+      "method": "itch",
+      "page": "https://quaternius.itch.io/modular-character-outfits-fantasy",
+      "upload": "Modular Character Outfits - Fantasy[Standard].zip",
+      "file": "outfits-standard.zip",
+      "sha256": "c3468b18871cc8c8f05ab14df7712baf22cb9f389cbd870babf130e595187f70",
+      "bytes": 294347394,
+      "extract": true
+    }
+  },
+  "candidates": [
+    {
+      "id": "kenney-mini",
+      "name": "Mini Characters 1.0",
+      "author": "Kenney (kenney.nl)",
+      "page": "https://kenney.nl/assets/mini-characters",
+      "license": "CC0 1.0",
+      "licenseEvidence": [
+        {
+          "source": "kenney-mini",
+          "path": "License.txt"
+        }
+      ],
+      "attribution": "Não obrigatória (sugerida: 'Kenney')",
+      "style": "Brinquedo minimalista: cabeça grande, cores chapadas de uma paleta (colormap 512²)",
+      "reference": "male-a",
+      "variants": [
+        {
+          "id": "male-a",
+          "source": "kenney-mini",
+          "path": "Models/GLB format/character-male-a.glb"
+        },
+        {
+          "id": "male-d",
+          "source": "kenney-mini",
+          "path": "Models/GLB format/character-male-d.glb"
+        },
+        {
+          "id": "female-b",
+          "source": "kenney-mini",
+          "path": "Models/GLB format/character-female-b.glb"
+        },
+        {
+          "id": "female-e",
+          "source": "kenney-mini",
+          "path": "Models/GLB format/character-female-e.glb"
+        }
+      ],
+      "idle": "idle",
+      "walk": "walk",
+      "run": "sprint"
+    },
+    {
+      "id": "kaykit-adventurers",
+      "name": "KayKit Character Pack: Adventurers 1.0",
+      "author": "Kay Lousberg (kaylousberg.com)",
+      "page": "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0",
+      "license": "CC0 1.0",
+      "licenseEvidence": [
+        {
+          "source": "kaykit-license",
+          "path": "LICENSE.txt"
+        }
+      ],
+      "attribution": "Não obrigatória (sugerida: 'Kay Lousberg')",
+      "style": "Chibi estilizado low-poly, atlas de gradiente 1024², partes do corpo separadas",
+      "reference": "rogue",
+      "removeNodes": "(Sword|Shield|Axe|Crossbow|Dagger|Knife|Throwable|Staff|Wand|Spellbook|Quiver|Arrow|Mug|Smokebomb)",
+      "keepAnimations": "^(Idle|Unarmed_Idle|Walking_[ABC]|Walking_Backwards|Running_[AB]|Running_Strafe_(Left|Right)|Jump_.*|Sit_.*|Lie_.*|Cheer|Interact|PickUp|Use_Item|Death_A)$",
+      "variants": [
+        {
+          "id": "rogue",
+          "source": "kaykit-rogue",
+          "path": "Rogue.glb"
+        },
+        {
+          "id": "barbarian",
+          "source": "kaykit-barbarian",
+          "path": "Barbarian.glb"
+        },
+        {
+          "id": "mage",
+          "source": "kaykit-mage",
+          "path": "Mage.glb"
+        },
+        {
+          "id": "knight",
+          "source": "kaykit-knight",
+          "path": "Knight.glb"
+        }
+      ],
+      "idle": "Idle",
+      "walk": "Walking_A",
+      "run": "Running_A"
+    },
+    {
+      "id": "quaternius-universal",
+      "name": "Universal Base Characters + Outfits Fantasy + Universal Animation Library (Standard)",
+      "author": "Quaternius (quaternius.com)",
+      "page": "https://quaternius.itch.io/universal-base-characters",
+      "license": "CC0 1.0",
+      "licenseEvidence": [
+        {
+          "source": "quaternius-ubc",
+          "path": "Universal Base Characters[Standard]/License_Standard.txt"
+        },
+        {
+          "source": "quaternius-outfits",
+          "path": "Modular Character Outfits - Fantasy[Standard]/License_Standard.txt"
+        },
+        {
+          "source": "quaternius-ual",
+          "path": "Universal Animation Library[Standard]/License.txt"
+        }
+      ],
+      "attribution": "Não obrigatória (sugerida: 'Quaternius')",
+      "style": "Proporções humanas (biotipo 'Superhero' na versão gratuita), PBR com normal/roughness, cabelos modulares",
+      "reference": "male",
+      "fixTextureUris": true,
+      "variants": [
+        {
+          "id": "male",
+          "source": "quaternius-ubc",
+          "path": "Universal Base Characters[Standard]/Base Characters/Godot - UE/Superhero_Male_FullBody.gltf"
+        },
+        {
+          "id": "female",
+          "source": "quaternius-ubc",
+          "path": "Universal Base Characters[Standard]/Base Characters/Godot - UE/Superhero_Female_FullBody.gltf"
+        }
+      ],
+      "parts": [
+        {
+          "id": "hair-simple-parted",
+          "source": "quaternius-ubc",
+          "path": "Universal Base Characters[Standard]/Hairstyles/Rigged to Head Bone/glTF (Godot -Unreal)/Hair_SimpleParted.gltf",
+          "slot": "hair"
+        },
+        {
+          "id": "hair-long",
+          "source": "quaternius-ubc",
+          "path": "Universal Base Characters[Standard]/Hairstyles/Rigged to Head Bone/glTF (Godot -Unreal)/Hair_Long.gltf",
+          "slot": "hair"
+        },
+        {
+          "id": "hair-buns",
+          "source": "quaternius-ubc",
+          "path": "Universal Base Characters[Standard]/Hairstyles/Rigged to Head Bone/glTF (Godot -Unreal)/Hair_Buns.gltf",
+          "slot": "hair"
+        },
+        {
+          "id": "hair-beard",
+          "source": "quaternius-ubc",
+          "path": "Universal Base Characters[Standard]/Hairstyles/Rigged to Head Bone/glTF (Godot -Unreal)/Hair_Beard.gltf",
+          "slot": "hair"
+        },
+        {
+          "id": "outfit-peasant-male",
+          "slot": "outfit",
+          "for": "male",
+          "source": "quaternius-outfits",
+          "path": "Modular Character Outfits - Fantasy[Standard]/Exports/glTF (Godot-Unreal)/Outfits/Male_Peasant.gltf"
+        },
+        {
+          "id": "outfit-peasant-female",
+          "slot": "outfit",
+          "for": "female",
+          "source": "quaternius-outfits",
+          "path": "Modular Character Outfits - Fantasy[Standard]/Exports/glTF (Godot-Unreal)/Outfits/Female_Peasant.gltf"
+        },
+        {
+          "id": "outfit-ranger-male",
+          "slot": "outfit",
+          "for": "male",
+          "source": "quaternius-outfits",
+          "path": "Modular Character Outfits - Fantasy[Standard]/Exports/glTF (Godot-Unreal)/Outfits/Male_Ranger.gltf"
+        },
+        {
+          "id": "outfit-ranger-female",
+          "slot": "outfit",
+          "for": "female",
+          "source": "quaternius-outfits",
+          "path": "Modular Character Outfits - Fantasy[Standard]/Exports/glTF (Godot-Unreal)/Outfits/Female_Ranger.gltf"
+        }
+      ],
+      "animationLibrary": {
+        "id": "animations",
+        "source": "quaternius-ual",
+        "path": "Universal Animation Library[Standard]/Unreal-Godot/UAL1_Standard.glb"
+      },
+      "idle": "Idle_Loop",
+      "walk": "Walk_Loop",
+      "run": "Jog_Fwd_Loop"
+    }
+  ]
+}
