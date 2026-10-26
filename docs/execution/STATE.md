@@ -14,7 +14,8 @@
   FPS, p50/p95/p99, CPU, sim, draw calls, triângulos, geometrias, texturas, heap), `game/` (composição, interpolação, dispose).
 - Rapier padrão × determinístico comparado (tamanho, init, passo, compatibilidade, hash) →
   [ADR-0003](../decisions/ADR-0003-rapier-build.md).
-- E2E em navegador real (`npm run test:e2e`): Edge e Firefox verdes; job `e2e` (Chromium/Linux) adicionado ao CI.
+- E2E em navegador real (`npm run test:e2e`): Edge e Firefox verdes; job `e2e` (Chromium/Linux) verde no CI.
+- CI run 40395522234 (`5ba4194`): verify Node 24 e 26 + e2e — todos verdes. Clone limpo: `npm ci` + `verify` verdes.
 - Controles: WASD/setas, Shift corre, clique captura o mouse (Esc solta; arrastar também gira), roda = zoom, F3 = HUD.
 
 ## NÃO VERIFICADO / bloqueios
