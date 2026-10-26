@@ -1,6 +1,6 @@
 # STATE
 
-- **Marco:** M3 — Multiplayer · **Status:** CONCLUÍDO (local), aguardando aprovação humana; CI: ver abaixo
+- **Marco:** M3 — Multiplayer · **Status:** CONCLUÍDO (local + CI), aguardando aprovação humana
 - **M2:** CONCLUÍDO (local + CI), aguardando aprovação. **M1:** CONCLUÍDO tecnicamente; revisão visual humana NÃO VERIFICADA.
 - **Data:** 2026-10-26
 - **Demo:** `npm run demo` → `http://127.0.0.1:5173` (detalhes, contas e checklist: [DEMO.md](DEMO.md))
@@ -35,7 +35,8 @@
 
 ## CI
 
-Pendente do push deste marco (registrado ao final da sessão). Último aprovado: run 40400920825 (`c096ee3`, M2).
+Run 40411173387 (`e46a14f`): verify Node 24 e 26 (PostgreSQL 18.4 via Compose, migração CLI, audit) + e2e Chromium/Linux
+(inclui `multiplayer.e2e.mjs` com 2 contextos de navegador) — todos verdes.
 
 ## Próxima ação
 
