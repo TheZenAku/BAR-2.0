@@ -22,6 +22,9 @@ export const toPublicUser = (row: UserRow): PublicUser => ({
   createdAt: row.created_at.toISOString(),
 });
 
+/** A session (by token hash) or every session of an account stopped being valid. Consumers: the game room. */
+export type Revocation = { kind: 'session'; tokenHash: Buffer } | { kind: 'user'; userId: string };
+
 export interface AuthServiceDeps {
   db: Db;
   mailer: Mailer;
@@ -32,6 +35,7 @@ export interface AuthServiceDeps {
 /** Account and session rules. Inputs are already validated/normalized by the shared schemas. */
 export class AuthService {
   private readonly deps: AuthServiceDeps;
+  private readonly revocationListeners = new Set<(r: Revocation) => void>();
 
   constructor(deps: AuthServiceDeps) {
     this.deps = deps;
@@ -101,7 +105,37 @@ export class AuthService {
 
   /** Idempotent: revoking an unknown or already revoked session is not an error. */
   async logout(token: string): Promise<void> {
-    await this.deps.db.deleteFrom('sessions').where('token_hash', '=', hashToken(token)).execute();
+    const tokenHash = hashToken(token);
+    await this.deps.db.deleteFrom('sessions').where('token_hash', '=', tokenHash).execute();
+    this.emitRevocation({ kind: 'session', tokenHash });
+  }
+
+  /** Of the given session hashes, those still valid (not revoked, not expired). One query for any number. */
+  async activeSessions(tokenHashes: readonly Buffer[]): Promise<Set<string>> {
+    if (tokenHashes.length === 0) return new Set();
+    const rows = await this.deps.db
+      .selectFrom('sessions')
+      .select(['token_hash'])
+      .where('token_hash', 'in', tokenHashes)
+      .where('expires_at', '>', sql<Date>`now()`)
+      .execute();
+    return new Set(rows.map((r) => r.token_hash.toString('hex')));
+  }
+
+  /** Subscribes to session revocations (same process). Returns the unsubscribe function. */
+  onRevocation(listener: (r: Revocation) => void): () => void {
+    this.revocationListeners.add(listener);
+    return () => this.revocationListeners.delete(listener);
+  }
+
+  private emitRevocation(r: Revocation): void {
+    for (const listener of this.revocationListeners) {
+      try {
+        listener(r);
+      } catch (err) {
+        this.deps.logger.error({ err: { message: (err as Error).message } }, 'revocation listener failed');
+      }
+    }
   }
 
   /**
@@ -135,7 +169,7 @@ export class AuthService {
   /** Consumes the token (single use), sets the new password and revokes every session of the account. */
   async confirmRecovery(token: string, newPassword: string): Promise<void> {
     const passwordHash = await hashPassword(newPassword);
-    await this.deps.db.transaction().execute(async (trx) => {
+    const userId = await this.deps.db.transaction().execute(async (trx) => {
       const consumed = await trx
         .deleteFrom('password_reset_tokens')
         .where('token_hash', '=', hashToken(token))
@@ -150,7 +184,9 @@ export class AuthService {
         .execute();
       await trx.deleteFrom('sessions').where('user_id', '=', consumed.user_id).execute();
       await trx.deleteFrom('password_reset_tokens').where('user_id', '=', consumed.user_id).execute();
+      return consumed.user_id;
     });
+    this.emitRevocation({ kind: 'user', userId });
   }
 
   /** Hard delete after password re-confirmation; sessions and tokens go with it (FK cascade). See ADR-0004. */
@@ -162,6 +198,7 @@ export class AuthService {
       .executeTakeFirst();
     if (!row || !(await verifyPassword(row.password_hash, password))) throw invalidCredentials();
     await this.deps.db.deleteFrom('users').where('id', '=', userId).execute();
+    this.emitRevocation({ kind: 'user', userId });
   }
 
   async findPublicUser(publicId: string): Promise<PublicUser | undefined> {

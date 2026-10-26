@@ -13,6 +13,13 @@ export interface MotorResult {
   readonly grounded: boolean;
 }
 
+/** Everything the motor carries between ticks; restoring it reproduces the same future moves. */
+export interface MotorState {
+  readonly position: Vec3;
+  readonly verticalSpeed: number;
+  readonly grounded: boolean;
+}
+
 /**
  * Kinematic body driven by Rapier's character controller: collide-and-slide, auto-step for stairs/curbs,
  * slope limits and snap-to-ground. Gravity is integrated here, not by the physics world.
@@ -55,6 +62,10 @@ export class CharacterMotor {
     return this.result;
   }
 
+  get verticalVelocity(): number {
+    return this.verticalSpeed;
+  }
+
   /** Moves for one tick. The physics world must be stepped afterwards to commit the kinematic pose. */
   move(planar: Planar, dt: number): MotorResult {
     // Grounded: no downward push — snap-to-ground keeps contact on slopes and steps down. A constant push into
@@ -89,6 +100,16 @@ export class CharacterMotor {
     this.verticalSpeed = 0;
     this.result = { position: { ...feet }, velocity: vec3(0, 0, 0), grounded: false };
     return this.result;
+  }
+
+  /** Puts the body exactly in `state` (reconciliation). The physics world must be stepped before the next move. */
+  restore(state: MotorState): void {
+    const p = state.position;
+    const center = { x: p.x, y: p.y + BODY_CENTER_Y, z: p.z };
+    this.body.setTranslation(center, true);
+    this.body.setNextKinematicTranslation(center);
+    this.verticalSpeed = state.verticalSpeed;
+    this.result = { position: { ...p }, velocity: vec3(0, 0, 0), grounded: state.grounded };
   }
 
   dispose(): void {

@@ -1,4 +1,4 @@
-export type { MotorResult } from './character.ts';
+export type { MotorResult, MotorState } from './character.ts';
 export { CharacterMotor } from './character.ts';
 export { BODY_CENTER_Y, CHARACTER, MOVEMENT, SIM_DT, SIM_HZ } from './config.ts';
 export { FixedStepper } from './fixed-step.ts';
@@ -12,5 +12,5 @@ export type { MoveIntent, Planar } from './movement.ts';
 export { IDLE_INTENT, sanitizeIntent, targetVelocity } from './movement.ts';
 export type { RapierApi } from './physics.ts';
 export { loadRapier, PhysicsWorld } from './physics.ts';
-export type { PlayerSnapshot } from './simulation.ts';
+export type { CharacterState, PlayerSnapshot } from './simulation.ts';
 export { Simulation } from './simulation.ts';

@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 /** Incremented on any breaking change to client/server contracts. */
-export const PROTOCOL_VERSION = 1;
+export const PROTOCOL_VERSION = 2;
 
 /** Response of `GET /health`. Strict: unknown fields are rejected. */
 export const HealthResponse = z.strictObject({

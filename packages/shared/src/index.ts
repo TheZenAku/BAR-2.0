@@ -22,4 +22,20 @@ export {
   RegisterRequest,
   SessionResponse,
 } from './auth.ts';
+export type { RemoteState, SelfState, Snapshot } from './game.ts';
+export {
+  GAME_ROOM,
+  GAME_WS_PATH,
+  GameCloseCode,
+  InputBatch,
+  InputFrame,
+  LOCOMOTION_CODES,
+  MAX_INPUTS_PER_MESSAGE,
+  Msg,
+  Roster,
+  RosterEntry,
+  SeatReservation,
+  SNAPSHOT_EVERY_TICKS,
+  Welcome,
+} from './game.ts';
 export { HealthResponse, PROTOCOL_VERSION } from './health.ts';

@@ -149,10 +149,50 @@ describe('Simulation (Rapier deterministic)', () => {
     expect(script(sim())).toEqual(script(sim()));
   });
 
+  it('restore + replay reproduces the uninterrupted run (reconciliation)', () => {
+    const intentAt = (i: number): MoveIntent => ({
+      forward: 1,
+      right: Math.sin(i / 23),
+      run: i % 150 < 90,
+      yaw: i / 70,
+    });
+    const authority = sim();
+    const states = [];
+    for (let i = 0; i < 600; i++) {
+      authority.tick(intentAt(i));
+      states.push(authority.state());
+    }
+    // The predictor rewinds 6 ticks every 20 and replays them, as the client does on every snapshot.
+    const predictor = sim();
+    for (let i = 0; i < 600; i++) {
+      predictor.tick(intentAt(i));
+      if (i % 20 === 19) {
+        predictor.restore(states[i - 6]!, i - 5);
+        for (let j = i - 5; j <= i; j++) predictor.tick(intentAt(j));
+      }
+    }
+    expect(predictor.player).toEqual(authority.player);
+    expect(predictor.state()).toEqual(authority.state());
+  });
+
   it('frees physics resources on dispose and tolerates double dispose', () => {
     const s = new Simulation(rapier, GREYBOX_BAR);
     s.dispose();
     expect(s.physics.isDisposed).toBe(true);
     expect(() => s.dispose()).not.toThrow();
+  });
+});
+
+describe('GREYBOX_BAR spawn points', () => {
+  it('are all on open floor: the character settles there without being pushed', () => {
+    const points = GREYBOX_BAR.spawnPoints ?? [];
+    expect(points.length).toBeGreaterThanOrEqual(8);
+    for (const p of points) {
+      const s = sim(p);
+      const end = run(s, idle, 0.5);
+      expect(end.grounded, JSON.stringify(p)).toBe(true);
+      expect(Math.hypot(end.position.x - p.x, end.position.z - p.z), JSON.stringify(p)).toBeLessThan(0.01);
+      expect(Math.abs(end.position.y - p.y), JSON.stringify(p)).toBeLessThan(0.02);
+    }
   });
 });

@@ -37,6 +37,10 @@ const Env = z
     TRUST_PROXY: z.stringbool().default(false),
     /** `dev-outbox` writes recovery messages to .data/outbox (never in production); `disabled` sends nothing. */
     MAIL_TRANSPORT: z.enum(['disabled', 'dev-outbox']).default('disabled'),
+    /** Players in the shared room (M3). Load measured up to 16 (docs/execution/TESTS.md). */
+    GAME_MAX_PLAYERS: z.coerce.number().int().min(1).max(64).default(16),
+    /** Seconds a dropped player keeps their place while the client reconnects. */
+    GAME_RECONNECT_SECONDS: z.coerce.number().int().min(0).max(300).default(20),
   })
   .superRefine((env, ctx) => {
     if (env.NODE_ENV !== 'production') return;

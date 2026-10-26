@@ -22,6 +22,17 @@ export interface PlayerSnapshot {
   readonly locomotion: Locomotion;
 }
 
+/** Full character state: enough to resume the simulation bit for bit (prediction/reconciliation, M3). */
+export interface CharacterState {
+  readonly position: Vec3;
+  readonly yaw: number;
+  /** Planar velocity carried into the next tick (acceleration state). */
+  readonly velocity: Planar;
+  readonly verticalSpeed: number;
+  readonly grounded: boolean;
+  readonly locomotion: Locomotion;
+}
+
 /**
  * Scales the commanded velocity down to the progress actually made along it, so pushing into a wall does not
  * build up hidden speed. It never adds speed or reverses direction: the controller's depenetration and
@@ -35,8 +46,8 @@ export function limitToProgress(commanded: Planar, achieved: Planar): Planar {
 }
 
 /**
- * Single-player simulation for the vertical slice: one physics world, one controlled character, fixed ticks.
- * Free of DOM and rendering so the server can run the same code (M3).
+ * One physics world, one controlled character, fixed ticks. Free of DOM and rendering: the client predicts with it
+ * and the server runs one per player as the authority (M3; players do not collide with each other).
  */
 export class Simulation {
   readonly level: LevelDef;
@@ -82,6 +93,34 @@ export class Simulation {
       locomotion: nextLocomotion(prev.locomotion, speed),
     };
     return this.current;
+  }
+
+  /** Full state after the last tick (see {@link restore}). */
+  state(): CharacterState {
+    const p = this.current;
+    return {
+      position: p.position,
+      yaw: p.yaw,
+      velocity: { ...this.velocity },
+      verticalSpeed: this.motor.verticalVelocity,
+      grounded: p.grounded,
+      locomotion: p.locomotion,
+    };
+  }
+
+  /** Resets to an authoritative state (reconciliation); later ticks continue exactly as they would from it. */
+  restore(state: CharacterState, tick: number = this.current.tick): void {
+    this.motor.restore(state);
+    this.physics.step(); // commits the kinematic pose so the next move starts from it
+    this.velocity = { ...state.velocity };
+    this.current = {
+      tick,
+      position: { ...state.position },
+      yaw: state.yaw,
+      speed: Math.hypot(state.velocity.x, state.velocity.z),
+      grounded: state.grounded,
+      locomotion: state.locomotion,
+    };
   }
 
   teleport(feet: Vec3): void {

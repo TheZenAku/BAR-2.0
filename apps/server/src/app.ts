@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto';
+import type { LevelDef, RapierApi } from '@bar/game-core';
 import {
   API_PREFIX,
   DeleteAccountRequest,
@@ -16,8 +17,10 @@ import {
 import cookie from '@fastify/cookie';
 import Fastify, { type FastifyReply, type FastifyRequest } from 'fastify';
 import { type AuthenticatedUser, AuthService } from './auth/service.ts';
+import { hashToken } from './auth/tokens.ts';
 import type { Config } from './config.ts';
 import { type Db, isDatabaseUnavailable, pingDatabase } from './db/database.ts';
+import { attachGame, type GameServer } from './game/attach.ts';
 import { ApiError, errorBody, parseInput, unauthenticated } from './http/errors.ts';
 import { assertTrustedOrigin } from './http/origin-guard.ts';
 import {
@@ -47,6 +50,17 @@ export interface AppOptions {
   mailer: Mailer;
   version: string;
   rateLimits?: RateLimits;
+  /** Multiplayer (M3). Omitted: no game room, `/api/v1/game/*` answers 404. */
+  game?: GameOptions;
+}
+
+export interface GameOptions {
+  rapier: RapierApi;
+  level: LevelDef;
+  maxPlayers: number;
+  reconnectSeconds: number;
+  /** How often connected sessions are re-checked for expiry. Default 15 s. */
+  revalidateMs?: number;
 }
 
 const SECURITY_HEADERS = {
@@ -74,6 +88,7 @@ export function buildApp(opts: AppOptions) {
   } as const;
   const startedAt = performance.now();
   let draining = false;
+  let game: GameServer | undefined;
 
   const app = Fastify({
     loggerInstance: logger,
@@ -84,6 +99,30 @@ export function buildApp(opts: AppOptions) {
     return503OnClosing: true,
   });
   app.register(cookie);
+
+  if (opts.game) {
+    const g = opts.game;
+    app.addHook('onReady', async () => {
+      game = await attachGame(
+        app.server,
+        {
+          auth,
+          rapier: g.rapier,
+          level: g.level,
+          logger,
+          cookieName,
+          maxPlayers: g.maxPlayers,
+          reconnectSeconds: g.reconnectSeconds,
+          revalidateMs: g.revalidateMs ?? 15_000,
+        },
+        allowedOrigins,
+      );
+    });
+    // Before the listener closes: players get a clean close frame instead of a dropped socket.
+    app.addHook('preClose', async () => {
+      await game?.close();
+    });
+  }
 
   app.addHook('onRequest', async (req, reply) => {
     reply.headers({ ...SECURITY_HEADERS, 'x-request-id': req.id });
@@ -231,8 +270,21 @@ export function buildApp(opts: AppOptions) {
     return sessionResponse(user);
   });
 
+  if (opts.game) {
+    app.post(`${API_PREFIX}/game/join`, async (req, reply) => {
+      limitByIp('gameJoin', req);
+      const session = await requireUser(req, reply);
+      if (!game || draining) throw new ApiError(503, 'service_unavailable', 'Game server not ready');
+      const reservation = await game.reserveSeat(session, hashToken(readToken(req)!));
+      req.log.info({ user: session.user.id }, 'game seat reserved');
+      return reservation;
+    });
+  }
+
   return Object.assign(app, {
     auth,
+    /** The live game room, when multiplayer is enabled (tests and diagnostics). */
+    game: () => game,
     /** Readiness turns 503 so load balancers stop routing before the listener closes. */
     startDraining(): void {
       draining = true;

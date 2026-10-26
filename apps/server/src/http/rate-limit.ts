@@ -9,7 +9,7 @@ export interface RateRule {
 const MIN = 60_000;
 const HOUR = 60 * MIN;
 
-export type RateAction = 'register' | 'login' | 'recoveryRequest' | 'recoveryConfirm' | 'deleteAccount';
+export type RateAction = 'register' | 'login' | 'recoveryRequest' | 'recoveryConfirm' | 'deleteAccount' | 'gameJoin';
 export type RateLimits = Record<RateAction, { perIp: RateRule; perEmail?: RateRule }>;
 
 export const DEFAULT_RATE_LIMITS: RateLimits = {
@@ -18,6 +18,8 @@ export const DEFAULT_RATE_LIMITS: RateLimits = {
   recoveryRequest: { perIp: { limit: 5, windowMs: HOUR }, perEmail: { limit: 3, windowMs: HOUR } },
   recoveryConfirm: { perIp: { limit: 10, windowMs: 15 * MIN } },
   deleteAccount: { perIp: { limit: 5, windowMs: 15 * MIN } },
+  // Reconnections reuse their seat; a full rejoin only follows a failed reconnection or a page reload.
+  gameJoin: { perIp: { limit: 30, windowMs: MIN } },
 };
 
 const SWEEP_THRESHOLD = 10_000;

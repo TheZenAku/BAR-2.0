@@ -3,7 +3,7 @@
 import type { Kysely } from 'kysely';
 import pg from 'pg';
 import { inject } from 'vitest';
-import { type AppConfig, buildApp } from '../app.ts';
+import { type AppConfig, buildApp, type GameOptions } from '../app.ts';
 import { createDatabase, type Db } from '../db/database.ts';
 import { migrateToLatest } from '../db/migrator.ts';
 import type { RateLimits } from '../http/rate-limit.ts';
@@ -35,6 +35,7 @@ export const RELAXED_LIMITS: RateLimits = {
   recoveryRequest: { perIp: generous, perEmail: generous },
   recoveryConfirm: { perIp: generous },
   deleteAccount: { perIp: generous },
+  gameJoin: { perIp: generous },
 };
 
 export class MemoryMailer implements Mailer {
@@ -80,7 +81,9 @@ export function testDb(url: string, logger = createLogger({ LOG_LEVEL: 'silent' 
 
 export type TestContext = Awaited<ReturnType<typeof createTestContext>>;
 
-export async function createTestContext(opts: { rateLimits?: RateLimits; config?: Partial<AppConfig> } = {}) {
+export async function createTestContext(
+  opts: { rateLimits?: RateLimits; config?: Partial<AppConfig>; game?: GameOptions } = {},
+) {
   const database = await createTestDatabase();
   const logs: string[] = [];
   const logger = createLogger({ LOG_LEVEL: 'debug' }, { write: (line: string) => void logs.push(line) });
@@ -94,8 +97,11 @@ export async function createTestContext(opts: { rateLimits?: RateLimits; config?
     mailer,
     version: 'test',
     rateLimits: opts.rateLimits ?? RELAXED_LIMITS,
+    ...(opts.game ? { game: opts.game } : {}),
   });
-  await app.ready();
+  // The game needs a real listening socket (WebSocket); HTTP-only tests use inject() without one.
+  if (opts.game) await app.listen({ port: 0, host: '127.0.0.1' });
+  else await app.ready();
   return {
     app,
     db,

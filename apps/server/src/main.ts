@@ -1,4 +1,5 @@
 import { join } from 'node:path';
+import { GREYBOX_BAR, loadRapier } from '@bar/game-core';
 import type { Kysely } from 'kysely';
 import { buildApp } from './app.ts';
 import { loadConfig } from './config.ts';
@@ -33,6 +34,12 @@ const app = buildApp({
   logger,
   mailer: createMailer(config.MAIL_TRANSPORT, logger, join(import.meta.dirname, '../../../.data/outbox')),
   version: process.env.npm_package_version ?? '0.0.0',
+  game: {
+    rapier: await loadRapier(),
+    level: GREYBOX_BAR,
+    maxPlayers: config.GAME_MAX_PLAYERS,
+    reconnectSeconds: config.GAME_RECONNECT_SECONDS,
+  },
 });
 
 await app.listen({ port: config.PORT, host: config.HOST });

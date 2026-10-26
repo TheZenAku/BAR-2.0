@@ -91,6 +91,7 @@ export const ErrorCode = z.enum([
   'forbidden_origin',
   'not_found',
   'rate_limited',
+  'room_full',
   'service_unavailable',
   'internal_error',
 ]);

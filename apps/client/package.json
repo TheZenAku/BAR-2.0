@@ -13,6 +13,7 @@
   "dependencies": {
     "@bar/game-core": "0.0.0",
     "@bar/shared": "0.0.0",
+    "@colyseus/sdk": "0.18.8",
     "three": "0.186.1"
   },
   "devDependencies": {

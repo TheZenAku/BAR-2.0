@@ -18,6 +18,8 @@ export interface LevelDef {
   readonly spawn: Vec3;
   /** Initial camera yaw at spawn. */
   readonly spawnYaw: number;
+  /** Multiplayer spawn spots (feet), all on open floor; the server picks the least crowded. Defaults to `spawn`. */
+  readonly spawnPoints?: readonly Vec3[];
   readonly boxes: readonly BoxDef[];
 }
 
@@ -57,6 +59,16 @@ export const GREYBOX_BAR: LevelDef = {
   name: 'greybox-bar',
   spawn: vec3(0, 0, 2),
   spawnYaw: 0,
+  spawnPoints: [
+    vec3(0, 0, 2),
+    vec3(1.2, 0, 2),
+    vec3(-1.2, 0, 2),
+    vec3(0, 0, 3.2),
+    vec3(1.2, 0, 3.2),
+    vec3(-1.2, 0, 3.2),
+    vec3(0.6, 0, 4.3),
+    vec3(-0.6, 0, 1.2),
+  ],
   boxes: [
     aabb('floor', vec3(-10, -0.2, -7), vec3(10, 0, 7), 'floor'),
     aabb('wall-n', vec3(-10.2, 0, -7.2), vec3(10.2, H, -7), 'wall'),
