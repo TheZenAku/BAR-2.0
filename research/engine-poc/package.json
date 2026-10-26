@@ -1,0 +1,31 @@
+{
+  "name": "bar-engine-poc",
+  "private": true,
+  "version": "0.0.0",
+  "description": "M0 engine POCs (Three.js, Babylon.js, PlayCanvas) sharing identical assets, physics and benchmark harness.",
+  "type": "module",
+  "scripts": {
+    "assets": "node tools/gen-assets.mjs",
+    "dev": "npm run assets && vite",
+    "typecheck": "tsc --noEmit",
+    "build": "npm run assets && node tools/build-all.mjs",
+    "bench": "node tools/bench.mjs",
+    "validate": "node tools/validate-assets.mjs",
+    "summarize": "node tools/summarize.mjs"
+  },
+  "dependencies": {
+    "@babylonjs/core": "9.32.0",
+    "@babylonjs/loaders": "9.32.0",
+    "@dimforge/rapier3d-compat": "0.21.0",
+    "playcanvas": "2.23.3",
+    "three": "0.186.1"
+  },
+  "devDependencies": {
+    "@gltf-transform/core": "4.5.1",
+    "@types/three": "0.186.0",
+    "gltf-validator": "2.0.0-dev.3.10",
+    "playwright": "1.64.1",
+    "typescript": "7.0.2",
+    "vite": "8.3.5"
+  }
+}

@@ -1,0 +1,35 @@
+{
+ "bar-greybox.glb": {
+  "validatorVersion": "2.0.0-dev.3.10",
+  "numErrors": 0,
+  "numWarnings": 0,
+  "numInfos": 10,
+  "numHints": 0,
+  "messages": [
+   "2:UNUSED_OBJECT /meshes/0/primitives/0/attributes/TEXCOORD_0",
+   "2:UNUSED_OBJECT /meshes/1/primitives/0/attributes/TEXCOORD_0",
+   "2:UNUSED_OBJECT /meshes/2/primitives/0/attributes/TEXCOORD_0",
+   "2:UNUSED_OBJECT /meshes/3/primitives/0/attributes/TEXCOORD_0",
+   "2:UNUSED_OBJECT /meshes/4/primitives/0/attributes/TEXCOORD_0",
+   "2:UNUSED_OBJECT /meshes/5/primitives/0/attributes/TEXCOORD_0",
+   "2:UNUSED_OBJECT /meshes/6/primitives/0/attributes/TEXCOORD_0",
+   "2:UNUSED_OBJECT /meshes/7/primitives/0/attributes/TEXCOORD_0",
+   "2:UNUSED_OBJECT /meshes/8/primitives/0/attributes/TEXCOORD_0",
+   "2:UNUSED_OBJECT /meshes/9/primitives/0/attributes/TEXCOORD_0"
+  ]
+ },
+ "avatar.glb": {
+  "validatorVersion": "2.0.0-dev.3.10",
+  "numErrors": 0,
+  "numWarnings": 1,
+  "numInfos": 4,
+  "numHints": 0,
+  "messages": [
+   "2:UNUSED_OBJECT /meshes/0/primitives/0/attributes/TEXCOORD_0",
+   "2:UNUSED_OBJECT /meshes/0/primitives/1/attributes/TEXCOORD_0",
+   "2:UNUSED_OBJECT /meshes/0/primitives/2/attributes/TEXCOORD_0",
+   "2:UNUSED_OBJECT /meshes/0/primitives/3/attributes/TEXCOORD_0",
+   "1:NODE_SKINNED_MESH_NON_ROOT /nodes/19"
+  ]
+ }
+}

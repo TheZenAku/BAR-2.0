@@ -1,0 +1,5 @@
+{
+  "$comment": "Procedência de todo asset externo. Nenhum asset externo foi incorporado até o M0. Os assets dos POCs (research/engine-poc) são gerados por código próprio (tools/gen-assets.mjs) e não são externos. Campos obrigatórios por entrada: id, source, author, url, license, licenseEvidence, version, retrievedAt, sha256, modifications, attribution, commercialUse, redistribution.",
+  "version": 1,
+  "assets": []
+}

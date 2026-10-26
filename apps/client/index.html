@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>B.A.R.</title>
+    <style>
+      html, body { margin: 0; height: 100%; overflow: hidden; background: #1a1410; color: #f3e9dc; font-family: system-ui, sans-serif; }
+      #view { display: block; width: 100vw; height: 100vh; }
+      #status { position: fixed; left: 16px; bottom: 16px; padding: 6px 10px; border-radius: 6px; background: rgba(0, 0, 0, 0.55); font-size: 14px; }
+    </style>
+  </head>
+  <body>
+    <canvas id="view" aria-label="Cena 3D"></canvas>
+    <div id="status" role="status" aria-live="polite">Carregando…</div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

@@ -1,0 +1,34 @@
+{
+  "name": "bar",
+  "private": true,
+  "version": "0.0.0",
+  "description": "B.A.R. — jogo social multiplayer 3D para navegadores.",
+  "type": "module",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=24.0.0",
+    "npm": ">=11.0.0"
+  },
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev:server": "npm run dev -w @bar/server",
+    "dev:client": "npm run dev -w @bar/client",
+    "build": "npm run build --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "lint": "biome check .",
+    "format": "biome check --write .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "check:arch": "node scripts/check-architecture.mjs",
+    "check:licenses": "node scripts/check-licenses.mjs",
+    "verify": "npm run lint && npm run typecheck && npm run test && npm run build && npm run check:arch && npm run check:licenses"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.6.3",
+    "typescript": "7.0.2",
+    "vitest": "5.0.5"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "three": {
+    "engineJsKB": 619,
+    "engineJsGzipKB": 155,
+    "rapierJsKB": 4231,
+    "rapierJsGzipKB": 1604
+  },
+  "babylon": {
+    "engineJsKB": 3576,
+    "engineJsGzipKB": 895,
+    "rapierJsKB": 4231,
+    "rapierJsGzipKB": 1604
+  },
+  "playcanvas": {
+    "engineJsKB": 1149,
+    "engineJsGzipKB": 300,
+    "rapierJsKB": 4231,
+    "rapierJsGzipKB": 1604
+  }
+}
