@@ -17,6 +17,10 @@ jobs:
     name: verify (node ${{ matrix.node }})
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    env:
+      # Disposable CI-only database (Docker Compose service from compose.yaml); never a real environment.
+      POSTGRES_PASSWORD: ci_only_password
+      BAR_TEST_DATABASE_URL: postgres://bar:ci_only_password@127.0.0.1:5432/postgres
     strategy:
       fail-fast: false
       matrix:
@@ -28,6 +32,12 @@ jobs:
           node-version: ${{ matrix.node }}
           cache: npm
       - run: npm ci
+      - name: Start PostgreSQL (compose.yaml)
+        run: docker compose up -d --wait postgres
+      - name: Migrations on a clean database (CLI)
+        run: npm run db:migrate
+        env:
+          DATABASE_URL: postgres://bar:ci_only_password@127.0.0.1:5432/bar
       - run: npm run lint
       - run: npm run typecheck
       - run: npm test
@@ -41,6 +51,10 @@ jobs:
     name: e2e (chromium headless)
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    env:
+      # Disposable CI-only database (Docker Compose service from compose.yaml); never a real environment.
+      POSTGRES_PASSWORD: ci_only_password
+      BAR_TEST_DATABASE_URL: postgres://bar:ci_only_password@127.0.0.1:5432/postgres
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
@@ -48,6 +62,8 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
+      - name: Start PostgreSQL (compose.yaml)
+        run: docker compose up -d --wait postgres
       - run: npx playwright install --with-deps chromium
       # Software WebGL (SwiftShader) on CI: validates behavior, not performance.
       - run: npm run test:e2e

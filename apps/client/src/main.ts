@@ -1,4 +1,10 @@
-// Boot: shows server status immediately, then loads the 3D slice (Three.js + Rapier) as a separate chunk.
+// Boot: shows server status immediately, resolves the session, then loads the 3D slice (Three.js + Rapier) as a
+// separate chunk only for signed-in players. Logout disposes the scene and returns to the account screen.
+import { OpaqueToken, type PublicUser } from '@bar/shared';
+import { AuthApi, errorMessage } from './auth/api.ts';
+import { AuthPanel } from './auth/auth-panel.ts';
+import { UserBar } from './auth/user-bar.ts';
+import type { Game } from './game/game.ts';
 import { fetchServerStatus } from './health.ts';
 import { resolveProfile } from './render/graphics-profile.ts';
 
@@ -28,25 +34,76 @@ void fetchServerStatus().then((server) => {
     : `B.A.R. · servidor offline (${server.reason})`;
 });
 
-try {
-  const { startGame } = await import('./game/game.ts');
-  const game = await startGame({
-    canvas,
-    hudParent: document.body,
-    profile: resolveProfile(location.search),
-    showHud: params.get('hud') !== '0',
-  });
-  window.__bar = {
-    ready: true,
-    snapshot: () => game.snapshot(),
-    resetStats: () => game.resetStats(),
-    dispose: () => game.dispose(),
-  };
-  import.meta.hot?.dispose(() => {
-    game.dispose();
-    window.__bar = undefined;
-  });
-} catch (err) {
-  console.error('falha ao iniciar a cena 3D', err);
-  status.textContent = 'B.A.R. · não foi possível iniciar a cena 3D (WebGL indisponível?)';
+const api = new AuthApi();
+let game: Game | undefined;
+let starting: Promise<void> | undefined;
+
+async function startScene(): Promise<void> {
+  try {
+    const { startGame } = await import('./game/game.ts');
+    canvas!.hidden = false;
+    game = await startGame({
+      canvas: canvas!,
+      hudParent: document.body,
+      profile: resolveProfile(location.search),
+      showHud: params.get('hud') !== '0',
+    });
+    const g = game;
+    window.__bar = {
+      ready: true,
+      snapshot: () => g.snapshot(),
+      resetStats: () => g.resetStats(),
+      dispose: () => g.dispose(),
+    };
+  } catch (err) {
+    console.error('falha ao iniciar a cena 3D', err);
+    status!.textContent = 'B.A.R. · não foi possível iniciar a cena 3D (WebGL indisponível?)';
+  }
 }
+
+function stopScene(): void {
+  game?.dispose();
+  game = undefined;
+  window.__bar = undefined;
+  canvas!.hidden = true;
+}
+
+function enter(user: PublicUser): void {
+  panel.hide();
+  userBar.show(user);
+  starting ??= startScene().finally(() => {
+    starting = undefined;
+  });
+}
+
+async function logout(): Promise<void> {
+  await starting;
+  const result = await api.logout();
+  stopScene();
+  userBar.hide();
+  // The cookie is cleared server-side even if this fails; the local session state is gone either way.
+  panel.show('login', result.ok ? { notice: 'Você saiu da sua conta.' } : { error: errorMessage(result.code) });
+}
+
+const panel = new AuthPanel(document.body, api, enter);
+const userBar = new UserBar(document.body, logout);
+canvas.hidden = true;
+
+// Recovery links carry the token in the fragment (never sent to servers or in Referer); drop it from the URL at once.
+const resetToken = /^#reset=(.+)$/.exec(location.hash)?.[1];
+if (resetToken !== undefined) history.replaceState(null, '', location.pathname + location.search);
+
+if (resetToken !== undefined && OpaqueToken.safeParse(resetToken).success) {
+  panel.show('reset', { resetToken });
+} else {
+  const session = await api.session();
+  if (session.ok) enter(session.data);
+  else if (session.code === 'unauthenticated') panel.show('login');
+  else panel.show('login', { error: errorMessage(session.code) });
+}
+
+import.meta.hot?.dispose(() => {
+  stopScene();
+  panel.dispose();
+  userBar.dispose();
+});

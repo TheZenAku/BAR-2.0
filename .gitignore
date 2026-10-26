@@ -12,3 +12,5 @@ Thumbs.db
 assets/generated/
 # E2E artifacts (screenshots, metrics)
 tests/e2e/output/
+# Local PostgreSQL clusters (embedded-postgres) and the dev mail outbox
+.data/

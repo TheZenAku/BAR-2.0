@@ -9,10 +9,31 @@
       html, body { margin: 0; height: 100%; overflow: hidden; background: #1a1410; color: #f3e9dc; font-family: system-ui, sans-serif; }
       #view { display: block; width: 100vw; height: 100vh; }
       #status { position: fixed; left: 16px; bottom: 16px; padding: 6px 10px; border-radius: 6px; background: rgba(0, 0, 0, 0.55); font-size: 14px; }
+      #view[hidden], #auth[hidden], #user-bar[hidden] { display: none; }
+      button, input { font: inherit; }
+      :focus-visible { outline: 3px solid #f5b85c; outline-offset: 2px; }
+      #auth { position: fixed; inset: 0; margin: auto; width: min(380px, calc(100vw - 32px)); height: fit-content; max-height: calc(100vh - 32px); overflow: auto; box-sizing: border-box; padding: 24px; border-radius: 12px; background: #2a201a; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5); }
+      #auth h1 { margin: 0 0 16px; font-size: 22px; }
+      #auth form { display: grid; gap: 14px; }
+      #auth .field { display: grid; gap: 4px; }
+      #auth label { font-weight: 600; font-size: 14px; }
+      #auth input { padding: 10px 12px; border: 1px solid #6b5848; border-radius: 8px; background: #1a1410; color: inherit; }
+      #auth input[aria-invalid="true"] { border-color: #ff8a7a; }
+      #auth small { color: #cbbba8; font-size: 12px; }
+      #auth .field-error, #auth .auth-error { color: #ff9d8f; }
+      #auth .auth-notice { color: #a9e0a0; }
+      #auth .auth-error:empty, #auth .auth-notice:empty, #auth .field-error:empty { display: none; }
+      #auth p { margin: 0 0 8px; font-size: 14px; }
+      #auth-submit { padding: 11px; border: 0; border-radius: 8px; background: #f5b85c; color: #1a1410; font-weight: 700; cursor: pointer; }
+      #auth-submit:disabled { opacity: 0.6; cursor: progress; }
+      .auth-links { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-top: 16px; }
+      .link { padding: 4px 0; border: 0; background: none; color: #f5d29c; text-decoration: underline; cursor: pointer; }
+      #user-bar { position: fixed; right: 16px; top: 16px; display: flex; gap: 10px; align-items: center; padding: 6px 8px 6px 12px; border-radius: 8px; background: rgba(0, 0, 0, 0.55); font-size: 14px; }
+      #logout { padding: 5px 10px; border: 1px solid #6b5848; border-radius: 6px; background: #2a201a; color: inherit; cursor: pointer; }
     </style>
   </head>
   <body>
-    <canvas id="view" aria-label="Cena 3D"></canvas>
+    <canvas id="view" aria-label="Cena 3D" hidden></canvas>
     <div id="status" role="status" aria-live="polite">Carregando…</div>
     <script type="module" src="/src/main.ts"></script>
   </body>

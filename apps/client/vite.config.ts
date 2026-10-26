@@ -3,7 +3,8 @@ import { defineConfig } from 'vite';
 const serverUrl = process.env.BAR_SERVER_URL ?? 'http://127.0.0.1:2567';
 
 export default defineConfig({
-  server: { proxy: { '/health': serverUrl } },
+  // Same-origin API in dev/preview: the session cookie stays first-party and no CORS is needed.
+  server: { proxy: { '/health': serverUrl, '/ready': serverUrl, '/api': serverUrl } },
   build: {
     target: 'es2023',
     sourcemap: true,

@@ -1,14 +1,16 @@
-// E2E smoke of the vertical slice in a real browser: real server (/health) + production client build.
-// Boots, checks rendering, walks/runs into the bar counter (collision), records frame-time percentiles and
-// verifies that disposing the game releases every GPU object.
+// E2E in a real browser: real server + real PostgreSQL + production client build.
+// Auth (M2): the scene is blocked without a session; register → scene; reload keeps the session; logout blocks
+// again; login → scene. Scene (M1): rendering, walk/run into the bar counter (collision), frame-time percentiles and
+// disposal of every GPU object.
+// PostgreSQL: BAR_TEST_DATABASE_URL (CI) or embedded binaries in .data/pg-e2e; a fresh bar_test_* database per run.
 // Usage: npm run test:e2e   (env BAR_E2E_BROWSER=msedge|chromium|firefox, default msedge;
 //   BAR_E2E_GFX=low|medium|high; BAR_E2E_SECONDS=5)
 import { spawn } from 'node:child_process';
 import { mkdirSync, writeFileSync } from 'node:fs';
-import { createServer } from 'node:net';
 import { join, resolve } from 'node:path';
 import { chromium, firefox } from 'playwright';
 import { preview } from 'vite';
+import { createTestDatabase, freePort, startPostgres } from '../support/postgres.mjs';
 
 const ROOT = resolve(import.meta.dirname, '../..');
 const OUT = join(ROOT, 'tests/e2e/output');
@@ -24,36 +26,39 @@ const check = (ok, what, detail = '') => {
 };
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-const freePort = () =>
-  new Promise((res, rej) => {
-    const s = createServer().listen(0, '127.0.0.1', () => {
-      const { port } = s.address();
-      s.close(() => res(port));
-    });
-    s.on('error', rej);
-  });
-
-// 1. Real backend.
+// 1. Real PostgreSQL + backend (migrations run at startup; /ready = database reachable).
+const pg = await startPostgres({ name: 'pg-e2e' });
+const database = await createTestDatabase(pg.adminUrl, 'e2e');
 const apiPort = await freePort();
+const webPort = await freePort();
 const api = spawn(process.execPath, ['apps/server/src/main.ts'], {
   cwd: ROOT,
-  env: { ...process.env, NODE_ENV: 'test', PORT: String(apiPort), LOG_LEVEL: 'warn' },
+  env: {
+    ...process.env,
+    NODE_ENV: 'test',
+    PORT: String(apiPort),
+    LOG_LEVEL: 'warn',
+    DATABASE_URL: database.url,
+    ALLOWED_ORIGINS: `http://127.0.0.1:${webPort}`,
+    MAIL_TRANSPORT: 'disabled',
+  },
   stdio: ['ignore', 'ignore', 'inherit'],
 });
-for (let i = 0; i < 50; i++) {
+let apiReady = false;
+for (let i = 0; i < 150 && !apiReady; i++) {
   try {
-    if ((await fetch(`http://127.0.0.1:${apiPort}/health`)).ok) break;
-  } catch {
-    await sleep(100);
-  }
+    apiReady = (await fetch(`http://127.0.0.1:${apiPort}/ready`)).ok;
+  } catch {}
+  if (!apiReady) await sleep(100);
 }
+check(apiReady, 'servidor pronto (/ready com PostgreSQL)', pg.source);
 
-// 2. Production client build served by `vite preview`, proxying /health to the backend.
+// 2. Production client build served by `vite preview`, proxying /health, /ready and /api to the backend.
 process.env.BAR_SERVER_URL = `http://127.0.0.1:${apiPort}`;
 const web = await preview({
   root: join(ROOT, 'apps/client'),
   logLevel: 'warn',
-  preview: { host: '127.0.0.1', port: await freePort(), strictPort: true },
+  preview: { host: '127.0.0.1', port: webPort, strictPort: true },
 });
 const url = web.resolvedUrls.local[0];
 
@@ -68,17 +73,66 @@ const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
 const errors = [];
 page.on('pageerror', (e) => errors.push(`pageerror: ${e.message}`));
 page.on('console', (m) => {
-  if (m.type() === 'error') errors.push(`console: ${m.text().slice(0, 200)}`);
+  // Expected: browsers log the 401s of "no session yet" and "wrong password" as failed resource loads.
+  const expected401 = m.location().url.includes('/api/v1/auth/') && m.text().includes('401');
+  if (m.type() === 'error' && !expected401) errors.push(`console: ${m.text().slice(0, 200)}`);
 });
 const snap = () => page.evaluate(() => window.__bar.snapshot());
 const metrics = { browser: `${browserName} ${browser.version()}`, date: new Date().toISOString() };
 
+const account = {
+  displayName: 'E2E Tester',
+  email: `e2e-${Date.now()}@example.com`,
+  password: 'e2e senha longa e segura',
+};
+const sessionStatus = () =>
+  page.evaluate(async () => (await fetch('/api/v1/auth/session', { credentials: 'same-origin' })).status);
+const sceneAbsent = () => page.evaluate(() => window.__bar === undefined && document.querySelector('#view').hidden);
+const waitScene = () => page.waitForFunction(() => window.__bar?.ready === true, null, { timeout: 60000 });
+const submitLogin = async (email, password) => {
+  await page.fill('#auth-email', email);
+  await page.fill('#auth-password', password);
+  await page.click('#auth-submit');
+};
+
 try {
-  const t0 = Date.now();
+  // --- M2: no session → account screen only.
   await page.goto(`${url}?gfx=${gfx}`);
-  await page.waitForFunction(() => window.__bar?.ready === true, null, { timeout: 60000 });
+  await page.waitForSelector('#auth-form', { state: 'visible', timeout: 30000 });
+  check(await sceneAbsent(), 'sem sessão: cena 3D bloqueada');
+  check((await sessionStatus()) === 401, 'sem sessão: /auth/session = 401');
+
+  await submitLogin('ninguem@example.com', 'senha qualquer 123');
+  await page.waitForFunction(() => document.querySelector('#auth-error')?.textContent?.length > 0);
+  const loginError = await page.textContent('#auth-error');
+  check(
+    loginError.includes('incorretos') && (await sceneAbsent()),
+    'login inválido: erro genérico, sem cena',
+    loginError,
+  );
+
+  await page.click('button[data-mode="register"]');
+  await page.fill('#auth-displayName', 'x');
+  await page.fill('#auth-email', account.email);
+  await page.fill('#auth-newPassword', 'curta');
+  await page.click('#auth-submit');
+  check(
+    (await page.getAttribute('#auth-displayName', 'aria-invalid')) === 'true' &&
+      (await page.getAttribute('#auth-newPassword', 'aria-invalid')) === 'true',
+    'cadastro: validação no cliente (aria-invalid)',
+  );
+
+  const t0 = Date.now();
+  await page.fill('#auth-displayName', account.displayName);
+  await page.fill('#auth-newPassword', account.password);
+  await page.click('#auth-submit');
+  await waitScene();
   metrics.bootMs = Date.now() - t0;
-  check(true, 'boot', `${metrics.bootMs} ms até a cena pronta`);
+  check(true, 'cadastro → cena', `${metrics.bootMs} ms do envio até a cena pronta`);
+  check((await page.textContent('#user-name')) === account.displayName, 'barra do usuário com nome de exibição');
+  const sid = (await page.context().cookies()).find((c) => c.name === 'bar_sid');
+  check(sid?.httpOnly === true && sid?.sameSite === 'Lax', 'cookie de sessão HttpOnly + SameSite=Lax');
+  check((await page.evaluate(() => document.cookie)) === '', 'cookie de sessão inacessível ao JavaScript');
   await page.waitForFunction(() => document.querySelector('#status')?.textContent?.includes('protocolo'), null, {
     timeout: 10000,
   });
@@ -165,13 +219,34 @@ try {
   );
   await page.keyboard.press('KeyW'); // listeners must be gone: must not throw
   await sleep(200);
+
+  // --- M2: the session survives reloads; logout blocks the scene; login restores it.
+  await page.reload();
+  await waitScene();
+  check(await page.isHidden('#auth'), 'reload mantém a sessão (sem formulário)');
+  await page.click('#logout');
+  await page.waitForSelector('#auth-form', { state: 'visible' });
+  check(await sceneAbsent(), 'logout: cena descartada');
+  check((await sessionStatus()) === 401, 'logout: sessão revogada no servidor');
+  await page.reload();
+  await page.waitForSelector('#auth-form', { state: 'visible' });
+  check(await sceneAbsent(), 'após logout + reload: acesso bloqueado');
+  await submitLogin(account.email.toUpperCase(), account.password);
+  await waitScene();
+  check((await sessionStatus()) === 200, 'login → cena e sessão ativa');
   check(errors.length === 0, 'sem erros no console/página', errors.join(' | '));
 } catch (e) {
   check(false, 'execução', String(e).slice(0, 400));
 } finally {
   await browser.close();
   await web.close();
-  api.kill();
+  if (api.exitCode === null) {
+    const exited = new Promise((r) => api.once('exit', r));
+    api.kill();
+    await exited;
+  }
+  await database.drop().catch((e) => console.warn(`drop test database: ${e}`));
+  await pg.stop();
 }
 
 mkdirSync(OUT, { recursive: true });
