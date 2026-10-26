@@ -32,15 +32,21 @@ npm run dev:client     # http://localhost:5173 (proxy de /health para o servidor
 | `npm run check:arch`              | Ciclos, direção de dependências e imports entre workspaces    |
 | `npm run check:licenses`          | Licenças das dependências de produção (allowlist)             |
 | `npm run verify`                  | Todos os gates acima, na ordem do CI                          |
+| `npm run test:e2e`                | Smoke em navegador real (Edge padrão; `BAR_E2E_BROWSER`)      |
+
+Na cena: WASD/setas movem, Shift corre, clique captura o mouse (Esc solta), roda = zoom, F3 = HUD de métricas.
+Perfil gráfico: `?gfx=low|medium|high` na URL.
 
 ## Estrutura
 
 ```
-apps/client        cliente web (Vite + Three.js)
+apps/client        cliente web (Vite + Three.js): input, câmera, avatar, render, debug
 apps/server        servidor Node (config tipada, logs pino, /health)
+packages/game-core simulação compartilhada (passo fixo, movimento, Rapier determinístico)
 packages/shared    contratos zod compartilhados
+tests/e2e          smoke em navegador real (Playwright)
 docs/              arquitetura, decisões (ADRs), execução, assets
-research/engine-poc  POCs de engine do M0 (projeto npm separado, fora do CI)
+research/          POCs de engine (M0) e comparação de builds Rapier (M1); projetos npm separados, fora do CI
 scripts/           gates de arquitetura e licenças
 ```
 

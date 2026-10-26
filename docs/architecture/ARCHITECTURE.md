@@ -1,6 +1,6 @@
 # Arquitetura
 
-Estado: M0. Decisões em [docs/decisions](../decisions/). Este documento descreve fronteiras e regras; detalhes de cada sistema
+Estado: M1. Decisões em [docs/decisions](../decisions/). Este documento descreve fronteiras e regras; detalhes de cada sistema
 entram quando o marco correspondente for executado.
 
 ## Visão lógica
@@ -16,20 +16,41 @@ entram quando o marco correspondente for executado.
               │ importa                                      │ importa
               └──────────────► packages/shared ◄─────────────┘
                                contratos zod, versão de protocolo
-                               (M3+: packages/game-core = regras determinísticas + Rapier)
+                               packages/game-core (M1): simulação + Rapier determinístico
 ```
 
 ## Workspaces (existentes)
 
-| Workspace         | Responsabilidade                                                                                | Pode depender de  |
-| ----------------- | ----------------------------------------------------------------------------------------------- | ----------------- |
-| `packages/shared` | Schemas/contratos versionados (zod), constantes de protocolo. Sem I/O, sem DOM, sem Node APIs.  | bibliotecas puras |
-| `apps/server`     | Processo autoritativo: config tipada, logging estruturado, HTTP, (futuro) salas e persistência. | `packages/*`      |
-| `apps/client`     | Renderização, UI, input, conexão. Nunca é fonte de verdade de estado sensível.                  | `packages/*`      |
+| Workspace            | Responsabilidade                                                                                                                             | Pode depender de                  |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------- |
+| `packages/shared`    | Schemas/contratos versionados (zod), constantes de protocolo. Sem I/O, sem DOM, sem Node APIs.                                               | bibliotecas puras                 |
+| `packages/game-core` | Simulação compartilhada: passo fixo, intenção de movimento, controlador Rapier (ADR-0003), nível como dados, locomoção. Sem DOM/render/rede. | `packages/*` (não `apps`), Rapier |
+| `apps/server`        | Processo autoritativo: config tipada, logging estruturado, HTTP, (futuro) salas e persistência.                                              | `packages/*`                      |
+| `apps/client`        | Renderização, UI, input, conexão. Nunca é fonte de verdade de estado sensível.                                                               | `packages/*`                      |
 
-Planejados, criados apenas quando houver uso real: `packages/game-core` (M1/M3: simulação compartilhada cliente/servidor),
-`packages/game-content` (dados de interações/itens), `packages/asset-pipeline` + `assets/` (M4), `tests/e2e|multiplayer|performance`
-(M1/M3), `infrastructure/` (M13).
+`tests/e2e` (M1): smoke em navegador real (servidor + build de produção). Planejados, criados apenas quando houver uso
+real: `packages/game-content` (dados de interações/itens), `packages/asset-pipeline` + `assets/` (M4),
+`tests/multiplayer|performance` (M3), `infrastructure/` (M13).
+
+## Cliente — vertical slice (M1)
+
+```
+input/ (teclado, mouse, pointer lock) ──► intenção {forward, right, run, yaw da câmera}
+                                              │  amostrada 1× por frame
+game/game.ts  rAF ─► FixedStepper 60 Hz ─► game-core Simulation.tick(intenção) ─► PlayerSnapshot (prev, curr)
+                                              │  interpolação por alpha
+      avatar/ (AvatarView: pose + locomoção → AnimationMixer)   camera/ (órbita + sphere cast estático)
+      render/ (RenderStage: renderer, luzes, perfil gráfico; LevelView: greybox mesclado por superfície)
+      debug/  (FrameStats p50/p95/p99, HUD F3, snapshot para E2E)
+```
+
+- Simulação nunca depende de FPS: ticks fixos de 1/60 s, até 15 por frame (250 ms); acima disso o tempo é descartado e
+  contado em `droppedTicks`. Render interpola entre os dois últimos snapshots.
+- O cliente produz **intenções**, nunca posições — o mesmo `MoveIntent` será a mensagem de rede no M3.
+- `AvatarView` isola o personagem técnico; o avatar GLB do M5 implementa a mesma interface (clipes `idle/walk/run`).
+- Todo subsistema tem `dispose()`; listeners usam `AbortController`. O E2E verifica que, após `dispose`, não restam
+  geometrias na GPU (resta 1 textura: LUT DFG compartilhada pelo próprio Three.js).
+- Nível é dado (`LevelDef`): física e render leem a mesma fonte; no M6 os colisores virão do GLB.
 
 ## Regras verificadas por gate
 

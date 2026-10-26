@@ -1,26 +1,31 @@
 # STATE
 
-- **Marco:** M0 — Fundação · **Status:** APROVADO com itens NÃO VERIFICADO (abaixo)
-- **Commit de referência:** `a464452` (código) + commit de documentação de estado seguinte
+- **Marco:** M1 — Vertical slice · **Status:** CONCLUÍDO localmente, aguardando aprovação humana (itens NÃO VERIFICADO abaixo)
+- **M0:** pendências de CI e Node 24 encerradas (GitHub Actions run 40389749929 em `df06a2b`: Node 24 e 26 verdes).
 - **Data:** 2026-10-26
 
-## Funciona (com evidência)
+## Funciona (com evidência — [TESTS.md](TESTS.md))
 
-- Monorepo npm workspaces: `apps/client` (Vite + Three.js r186, boot + status do servidor), `apps/server` (config zod,
-  pino, `GET /health`, shutdown gracioso), `packages/shared` (contrato `HealthResponse`, `PROTOCOL_VERSION`).
-- Gates: `npm run verify` = Biome + TS 7 + Vitest (10 testes) + build + `check:arch` + `check:licenses` — verde local e em clone limpo.
-- POCs de engine executados (84 runs, Edge + Firefox) → [RESULTS.md](../../research/engine-poc/results/RESULTS.md);
-  decisão em [ADR-0001](../decisions/ADR-0001-engine.md); ferramentas/stack em [ADR-0002](../decisions/ADR-0002-platform-tooling.md).
+- `packages/game-core`: passo fixo 60 Hz (`FixedStepper`), `MoveIntent` sanitizado, aceleração/desaceleração, controlador
+  Rapier determinístico (cilindro arredondado, auto-step 0,35 m, rampa ≤ 40°, snap ao chão), locomoção idle/walk/run com
+  histerese, greybox do bar como dados (`GREYBOX_BAR`). Testado contra o WASM real.
+- `apps/client`: módulos separados `input/`, `camera/` (órbita + sphere cast), `avatar/` (`AvatarView` + avatar técnico
+  com AnimationMixer), `render/` (perfis low/medium/high via `?gfx=`, greybox mesclado por superfície), `debug/` (HUD F3:
+  FPS, p50/p95/p99, CPU, sim, draw calls, triângulos, geometrias, texturas, heap), `game/` (composição, interpolação, dispose).
+- Rapier padrão × determinístico comparado (tamanho, init, passo, compatibilidade, hash) →
+  [ADR-0003](../decisions/ADR-0003-rapier-build.md).
+- E2E em navegador real (`npm run test:e2e`): Edge e Firefox verdes; job `e2e` (Chromium/Linux) adicionado ao CI.
+- Controles: WASD/setas, Shift corre, clique captura o mouse (Esc solta; arrastar também gira), roda = zoom, F3 = HUD.
 
 ## NÃO VERIFICADO / bloqueios
 
-- CI no GitHub: workflow escrito, nunca executado (repositório sem remoto; `gh` não autenticado).
-- Node 24 LTS: só Node 26.12.1 disponível localmente.
-- Desempenho absoluto: única máquina é VM com GPU virtual; Firefox caiu em renderização por software.
-- Shutdown por SIGTERM: não testável no Windows (sem handlers de sinal para `kill`).
-- Docker e Blender ausentes (necessários a partir de M2 e M4, respectivamente).
+- Desempenho em hardware físico: única máquina é VM (Edge preso a 60 Hz por vsync; Firefox em WebGL por software).
+- Determinismo entre arquiteturas (ARM): sem hardware.
+- Shutdown por SIGTERM no Windows: não testável (inalterado desde M0).
+- Docker (M2) e Blender (M4) ausentes.
 
 ## Próxima ação
 
-Aguardar aprovação humana do M0. Ao aprovar: configurar remoto Git e rodar o CI; então iniciar **M1 — Vertical slice**
-(criar `packages/game-core` com a simulação Rapier do POC, medir build determinístico vs compat e tamanho do WASM).
+Revisão humana do M1: `npm run dev:server` + `npm run dev:client` e jogar a cena (checklist: andar/correr, escada do
+palco, rampa do lounge, rampa íngreme, meio-fio/bloco, câmera contra paredes, F3). Ao aprovar: iniciar **M2 — Backend**
+(instalar Docker para PostgreSQL antes da sessão).
