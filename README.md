@@ -16,6 +16,11 @@ PostgreSQL 18 é obrigatório para o servidor e para `npm test`. Os testes usam 
 ou, sem ela, sobem PostgreSQL real local via `embedded-postgres` (dados em `.data/`, ignorado pelo Git; nada é instalado
 globalmente). Os testes criam e apagam bancos próprios `bar_test_*` e nunca leem `DATABASE_URL`.
 
+## Demo rápida
+
+`npm ci` e depois `npm run demo`: PostgreSQL isolado, API, cliente e 2 contas descartáveis em um comando.
+Detalhes, URLs e checklist em [docs/execution/DEMO.md](docs/execution/DEMO.md).
+
 ## Instalação e uso
 
 ```bash
@@ -32,19 +37,20 @@ Com `MAIL_TRANSPORT=dev-outbox` (padrão do `.env.example`), links de recuperaç
 
 ## Scripts
 
-| Script                                   | O que faz                                                            |
-| ---------------------------------------- | -------------------------------------------------------------------- |
-| `npm run lint` / `npm run format`        | Biome (lint + formatação)                                            |
-| `npm run typecheck`                      | TypeScript estrito em cada workspace                                 |
-| `npm test`                               | Vitest: unitários + integração com PostgreSQL real                   |
-| `npm run test:unit` / `test:integration` | Só um dos projetos do Vitest                                         |
-| `npm run db:up` / `db:local`             | PostgreSQL via Docker Compose / binários locais sem Docker           |
-| `npm run db:migrate`                     | Aplica migrações pendentes (`-- down` reverte a última)              |
-| `npm run build`                          | Build de produção do cliente (o servidor roda TS diretamente)        |
-| `npm run check:arch`                     | Ciclos, direção de dependências e imports entre workspaces           |
-| `npm run check:licenses`                 | Licenças das dependências de produção (allowlist)                    |
-| `npm run verify`                         | Todos os gates acima, na ordem do CI                                 |
-| `npm run test:e2e`                       | Navegador real: login/logout + cena (Edge padrão; `BAR_E2E_BROWSER`) |
+| Script                                   | O que faz                                                             |
+| ---------------------------------------- | --------------------------------------------------------------------- |
+| `npm run lint` / `npm run format`        | Biome (lint + formatação)                                             |
+| `npm run typecheck`                      | TypeScript estrito em cada workspace                                  |
+| `npm test`                               | Vitest: unitários + integração com PostgreSQL real                    |
+| `npm run test:unit` / `test:integration` | Só um dos projetos do Vitest                                          |
+| `npm run demo`                           | Demo local completa e isolada (ver DEMO.md); `-- --smoke` só verifica |
+| `npm run db:up` / `db:local`             | PostgreSQL via Docker Compose / binários locais sem Docker            |
+| `npm run db:migrate`                     | Aplica migrações pendentes (`-- down` reverte a última)               |
+| `npm run build`                          | Build de produção do cliente (o servidor roda TS diretamente)         |
+| `npm run check:arch`                     | Ciclos, direção de dependências e imports entre workspaces            |
+| `npm run check:licenses`                 | Licenças das dependências de produção (allowlist)                     |
+| `npm run verify`                         | Todos os gates acima, na ordem do CI                                  |
+| `npm run test:e2e`                       | Navegador real: login/logout + cena (Edge padrão; `BAR_E2E_BROWSER`)  |
 
 Na cena: WASD/setas movem, Shift corre, clique captura o mouse (Esc solta), roda = zoom, F3 = HUD de métricas.
 Perfil gráfico: `?gfx=low|medium|high` na URL.
