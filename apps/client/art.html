@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>B.A.R. — Galeria de candidatos (M4)</title>
+    <link rel="icon" href="data:," />
+    <style>
+      html, body { margin: 0; height: 100%; overflow: hidden; background: #1a1410; color: #f3e9dc; font: 14px/1.4 system-ui, sans-serif; }
+      #view { display: block; width: 100vw; height: 100vh; }
+      #panel { position: fixed; top: 0; right: 0; bottom: 0; width: min(360px, 42vw); overflow: auto; box-sizing: border-box; padding: 14px 16px; background: rgba(20, 15, 12, 0.92); border-left: 1px solid #3a2e25; }
+      #panel h1 { margin: 0 0 4px; font-size: 18px; }
+      #panel h2 { margin: 16px 0 6px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; color: #f5b85c; }
+      #panel p { margin: 4px 0; }
+      .row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+      button, select { font: inherit; color: inherit; background: #2a201a; border: 1px solid #6b5848; border-radius: 6px; padding: 5px 9px; cursor: pointer; }
+      button[aria-pressed="true"] { background: #f5b85c; color: #1a1410; border-color: #f5b85c; font-weight: 700; }
+      select { max-width: 100%; }
+      :focus-visible { outline: 3px solid #f5b85c; outline-offset: 2px; }
+      a { color: #f5d29c; }
+      .muted { color: #b9a894; font-size: 12px; }
+      .warn { color: #ffb3a6; }
+      dl { display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; margin: 4px 0; }
+      dt { color: #b9a894; }
+      dd { margin: 0; }
+      blockquote { margin: 4px 0; padding: 4px 8px; border-left: 3px solid #6b5848; color: #d8cbbb; font-size: 12px; }
+      .thumbs { display: flex; flex-wrap: wrap; gap: 6px; }
+      .thumbs figure { margin: 0; text-align: center; font-size: 11px; color: #b9a894; }
+      .thumbs canvas { display: block; width: 64px; height: 64px; border: 1px solid #3a2e25; background: #000; }
+      #stats { position: fixed; left: 12px; top: 12px; margin: 0; padding: 8px 10px; background: rgba(0, 0, 0, 0.6); border-radius: 6px; font: 12px/1.45 ui-monospace, Consolas, monospace; white-space: pre; pointer-events: none; }
+      #help { position: fixed; left: 12px; bottom: 12px; padding: 6px 10px; background: rgba(0, 0, 0, 0.6); border-radius: 6px; font-size: 12px; }
+      .label { position: fixed; transform: translate(-50%, -100%); padding: 2px 8px; border-radius: 999px; background: rgba(0, 0, 0, 0.65); font-size: 12px; white-space: nowrap; pointer-events: none; }
+      #loading { position: fixed; inset: 0; display: grid; place-items: center; font-size: 18px; pointer-events: none; }
+    </style>
+  </head>
+  <body>
+    <canvas id="view"></canvas>
+    <aside id="panel" aria-label="Controles da galeria"></aside>
+    <pre id="stats" aria-live="off"></pre>
+    <div id="help">
+      Arrastar: girar · roda: zoom · botão direito: mover · 1/2/3 candidato · L lado a lado · F/P/C frente/perfil/costas ·
+      Espaço pausa · ←/→ animação · M material · I luz · E cenário · R referência ·
+      <a id="back" href="/">voltar à demo multiplayer</a>
+    </div>
+    <div id="loading">Carregando candidatos…</div>
+    <script type="module" src="/src/art/gallery.ts"></script>
+  </body>
+</html>
