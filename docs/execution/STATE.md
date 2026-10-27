@@ -44,8 +44,8 @@
 
 ## CI
 
-Run 40418272350 (`2d5bec9`, M4): verify Node 24 e 26 + e2e Chromium + `assets` (validação glTF e hashes idênticos ao
-manifest em Linux) — todos verdes.
+Run 40423871649 (`a485833`, acesso remoto): verify Node 24 e 26, e2e e `assets` verdes. M4: run 40418272350 (`2d5bec9`) —
+verify + e2e + `assets` (validação glTF e hashes idênticos ao manifest em Linux) — todos verdes.
 
 ## Próxima ação
 
