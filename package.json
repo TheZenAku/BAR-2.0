@@ -18,6 +18,7 @@
     "dev:client": "npm run dev -w @bar/client",
     "demo": "node scripts/demo.mjs",
     "demo:art": "node scripts/demo-art.mjs",
+    "demo:remote": "node scripts/demo-remote.mjs",
     "assets:fetch": "node scripts/assets/fetch.mjs",
     "assets:build": "node scripts/assets/build.mjs",
     "db:up": "docker compose up -d --wait postgres",
