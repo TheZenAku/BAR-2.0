@@ -68,6 +68,27 @@ página, catálogo e os 19 arquivos e encerra.
 Avaliar: silhueta e leitura a distância no bar, proporção entre candidatos (mesma escala), deformação ao andar/sentar,
 expressividade do rosto e adequação ao [conceito](../design/ART_DIRECTION.md). Nenhum candidato está no jogo ainda.
 
+## Acesso remoto (outro computador ou celular) — HTTPS
+
+```sh
+npm run demo:remote            # multiplayer + galeria por uma URL https://<aleatório>.trycloudflare.com
+npm run demo:remote -- --stop  # em outro terminal: fecha o túnel (ou Ctrl+C no terminal da demo)
+```
+
+1. O terminal mostra o **link de acesso** (secreto; também em `.data/remote-access.json`, campo `accessUrl`). Abra-o
+   no celular/outro computador: ele grava um cookie de acesso e leva ao multiplayer. A galeria fica em `/art.html`.
+2. Entre com uma conta descartável: e-mails no terminal, **senhas só em `.data/demo-accounts.json`** (nesta máquina).
+   Para jogar a dois, use dois aparelhos (ou uma janela anônima, que precisa abrir o link de novo).
+3. Para cortar o acesso de quem recebeu o link: `--stop`; para invalidar o link de vez: `-- --new-token`.
+
+Independe das demos locais (portas 8780/2580, banco `.data/pg-remote`); podem rodar juntas. Sem conta, sem portas no
+roteador, sem regra de firewall, sem instalação global (`cloudflared` oficial verificado em `.cache/tools`). A URL muda
+a cada execução. Segurança e limites: [ADR-0006](../decisions/ADR-0006-acesso-remoto.md). `-- --smoke` verifica tudo
+pela URL pública e encerra; `-- --local` faz o mesmo sem túnel (testes).
+
+**IP público direto / LAN:** não configurado (NAT duplo, CGNAT não verificado, exigiria portas nos roteadores, regra de
+firewall e TLS — ver ADR-0006). O link HTTPS funciona também de aparelhos na mesma rede.
+
 ## Não implementado (marcos futuros)
 
 Avatar definitivo e personalização (M5), cenário final (M6), interações/cadeiras/portas (M7), chat (M8),
@@ -79,3 +100,5 @@ jogos e economia (M9/M10), tela de exclusão de conta, e-mail real. Jogadores n�
   navegador real (Edge) nas duas URLs com as duas contas: ambos online, posição idêntica nas duas telas, 0 erros.
 - 2026-10-26 (M4): `npm run demo:art -- --smoke` aprovado (19 arquivos); E2E da galeria no Edge aprovado; demo
   multiplayer `--smoke` aprovada de novo após o M4 (portas/cluster isolados), 2 contas na mesma sala.
+- 2026-10-26 (acesso remoto): `demo:remote -- --smoke` aprovado pela URL pública (15 verificações); E2E em navegador real
+  pela URL HTTPS (Edge, 16 verificações); `--stop` fecha o túnel (URL → 530). Rede externa de outro provedor: NÃO VERIFICADO.

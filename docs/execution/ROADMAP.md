@@ -18,3 +18,6 @@ Um marco por execução. Não avançar sem aprovação. Status: APROVADO · REPR
 | M11 Conteúdo      | Áudio, NPCs, eventos, emotes, atividade cooperativa                                       | Eventos server-side com cleanup testado; limites de CPU medidos                                                                   | PENDENTE                          |
 | M12 Polimento     | UX, otimização, testes em hardware real                                                   | Metas de FPS medidas em hardware físico (não VM)                                                                                  | PENDENTE                          |
 | M13 Beta          | Staging, carga, soak, backup/restore, observabilidade, runbooks                           | Restore testado; soak sem vazamento; runbooks revisados                                                                           | PENDENTE                          |
+
+Fora dos marcos: **acesso remoto às demos** (`npm run demo:remote`, túnel HTTPS + gateway com link de acesso) —
+[ADR-0006](../decisions/ADR-0006-acesso-remoto.md). Não substitui a hospedagem/staging do M13.

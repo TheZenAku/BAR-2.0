@@ -52,16 +52,28 @@ luz pendurado), nunca sujo ou depreciativo.
 | Neon secundário     | `#2de0ff` | ciano                        |
 | Fundo / sombra      | `#1a1410` | cor de fundo e névoa do M1   |
 
-## Como cada candidato se encaixa (análise, não decisão)
+## Comparação para a decisão (análise, não decisão)
 
-- **Kenney Mini:** humor e leveza imediatos, leve demais (≈ 730 triângulos, 7 juntas): pouca expressividade de corpo e
-  mãos; braços abertos no idle. Ótimo para multidões; distante do "PS2 com acabamento".
-- **KayKit Adventurers:** o mais próximo do conceito — formas robustas, rosto expressivo, atlas de gradiente leve,
-  76 → 32 animações úteis (sentar em cadeira, comemorar, interagir). Tema fantasia: exige trajes casuais próprios
-  (as partes do corpo já são separadas, o que facilita).
-- **Quaternius Universal:** maior fidelidade e mais animações sociais (dançar, conversar sentado), mas puxa para o
-  realista; na versão gratuita o corpo "super-herói" atravessa os trajes e não há cabeça avulsa (tier pago, também CC0).
-  Mais pesado (≈ 14–27 k triângulos com traje, 3 conjuntos PBR).
+Números medidos nos GLBs gerados (catálogo do pipeline); "16 jogadores" = triângulos de avatares numa sala cheia
+(limite atual `GAME_MAX_PLAYERS`). Estética e expressividade são leitura técnica da galeria: **confirme olhando**.
 
-Recomendação técnica para o protótipo do M5, **sujeita à sua escolha**: KayKit como linguagem base, com trajes casuais
-de boteco modelados no mesmo rig.
+| Critério                       | Kenney Mini                                      | KayKit Adventurers                                                                  | Quaternius Universal                                                                    |
+| ------------------------------ | ------------------------------------------------ | ----------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| Adequação ao conceito (boteco) | humor e leveza; visual "mobile", distante do PS2 | **mais próxima**: chibi robusto, cores quentes, leitura a distância                 | proporção humana; puxa para o realista                                                  |
+| Expressividade                 | baixa: 7 juntas, mãos sem dedos, rosto mínimo    | **alta**: rosto marcado, corpo com 41 juntas                                        | corpo bom (65 juntas, dedos); rosto neutro, sem expressões no tier gratuito             |
+| Proporções                     | cabeça enorme, membros curtos                    | chibi (cabeça grande)                                                               | humanas (biotipo "super-herói" no gratuito)                                             |
+| Animações (sociais)            | 32: sentar, sim/não, interagir, cadeira de rodas | 32 mantidas: sentar cadeira/chão (entrar/sair), comemorar, interagir                | **43**: dançar, conversar em pé e sentado, sentar, interagir                            |
+| Personalização                 | 12 personagens fixos; troca de cor pela paleta   | partes do corpo separadas no mesmo rig (cabeça, tronco, braços…)                    | **cabelos e trajes modulares** já religados no mesmo esqueleto (provado)                |
+| Roupas modernas                | não há; criar é limitado pelo estilo/rig mínimo  | não há (tema fantasia); formas simples → modelar casual é viável                    | não há no gratuito (só fantasia); roupa realista exige mais trabalho de pesos           |
+| Desempenho (por avatar)        | ≈ 0,75 k tri, 1 material, 77 KB                  | ≈ 4,3–4,8 k tri, 1 material, 2,1 MB (animações embutidas)                           | ≈ 28–45 k tri com traje e cabelo, 5–6 materiais, 1,2–1,9 MB + 2,1 MB de animações       |
+| 16 jogadores (triângulos)      | ≈ 12 k                                           | ≈ 75 k                                                                              | ≈ 450–730 k (fora do orçamento de ≤ 15 k/avatar sem LOD e corte do corpo oculto)        |
+| Trabalho para adaptar (M5)     | baixo, mas teto baixo                            | **médio**: trajes casuais e cabelos no rig; separar animações num GLB compartilhado | alto: trajes atravessados pelo corpo, LOD, materiais, rosto; corpo "regular" só no pago |
+| Ferramenta necessária          | —                                                | Blender (ausente nesta máquina) para trajes                                         | Blender para trajes/ajustes                                                             |
+
+**Recomendação técnica (decisão sua):** KayKit como linguagem base — a mais próxima do conceito, expressiva e dentro do
+orçamento com folga para 16+ jogadores; o custo é criar trajes casuais e cabelos no mesmo rig (exige Blender). Quaternius
+vale se a preferência for proporção humana e mais animações sociais, aceitando bem mais trabalho de otimização. Kenney só
+se a prioridade for multidões muito grandes ou estilo minimalista.
+
+Para decidir, responda: **(1)** personagem base; **(2)** grau de estilização; **(3)** acabamento; **(4)** rosto com ou sem
+expressões. Até lá nenhum trabalho do M5 (rig, trajes, personagens finais) é iniciado.
