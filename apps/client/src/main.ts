@@ -1,5 +1,6 @@
 // Boot: shows server status immediately, resolves the session, then loads the 3D slice (Three.js + Rapier) as a
 // separate chunk only for signed-in players. Logout disposes the scene and returns to the account screen.
+import './zod-jitless.ts'; // before any schema is created (CSP without 'unsafe-eval')
 import { OpaqueToken, type PublicUser } from '@bar/shared';
 import { AuthApi, errorMessage } from './auth/api.ts';
 import { AuthPanel } from './auth/auth-panel.ts';
